@@ -1,0 +1,337 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="Convert images to ICO icons online for free with Avenqio. Create favicon icons easily.">
+
+<title>Image to ICO Converter - Avenqio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f8fc;
+    color: #172554;
+}
+
+header {
+    background: white;
+    padding: 20px 8%;
+    box-shadow: 0 2px 10px #00000010;
+}
+
+.logo {
+    color: #5b4cf0;
+    font-size: 26px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.container {
+    max-width: 850px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 5px 25px #0000000c;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+p {
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.upload {
+    display: block;
+    padding: 30px;
+    margin: 25px 0;
+    border: 2px dashed #5b4cf0;
+    border-radius: 12px;
+    background: #fafaff;
+}
+
+input {
+    margin-top: 15px;
+    max-width: 100%;
+}
+
+.preview img {
+    max-width: 100%;
+    max-height: 250px;
+    margin: 20px auto;
+    border-radius: 8px;
+}
+
+select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 15px;
+    font-size: 15px;
+}
+
+button {
+    background: #5b4cf0;
+    color: white;
+    border: none;
+    padding: 13px 22px;
+    margin: 8px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4535d5;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+#status {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+
+footer a {
+    color: #5b4cf0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<a href="index.html" class="logo">Avenqio</a>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Image to ICO Converter</h1>
+
+<p>Convert your images into ICO icon files online for free. Create favicon icons for your website.</p>
+
+<label class="upload">
+<strong>Select Your Image</strong>
+<br>
+<input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp">
+</label>
+
+<div class="preview">
+<img id="preview" style="display:none;" alt="Image Preview">
+</div>
+
+<p><strong>Select Icon Size</strong></p>
+
+<select id="iconSize">
+<option value="16">16 × 16</option>
+<option value="32">32 × 32</option>
+<option value="48" selected>48 × 48</option>
+<option value="64">64 × 64</option>
+<option value="128">128 × 128</option>
+<option value="256">256 × 256</option>
+</select>
+
+<br>
+
+<button id="convertBtn" disabled>Convert to ICO</button>
+
+<p id="status">Choose an image to get started.</p>
+
+<div id="downloadArea"></div>
+
+</div>
+</div>
+
+<footer>
+<p>© 2026 Avenqio. Simple and useful online tools.</p>
+<a href="index.html">Back to Home</a>
+</footer>
+
+<script>
+
+const imageInput = document.getElementById("imageInput");
+const preview = document.getElementById("preview");
+const convertBtn = document.getElementById("convertBtn");
+const iconSize = document.getElementById("iconSize");
+const status = document.getElementById("status");
+const downloadArea = document.getElementById("downloadArea");
+
+let selectedFile = null;
+let imageURL = null;
+let outputURL = null;
+
+imageInput.addEventListener("change", function() {
+
+    const file = imageInput.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        status.textContent = "Please select a valid image.";
+        return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+        status.textContent = "Please select an image smaller than 15 MB.";
+        return;
+    }
+
+    selectedFile = file;
+
+    if (imageURL) URL.revokeObjectURL(imageURL);
+    if (outputURL) URL.revokeObjectURL(outputURL);
+
+    outputURL = null;
+    downloadArea.innerHTML = "";
+
+    imageURL = URL.createObjectURL(file);
+
+    preview.src = imageURL;
+    preview.style.display = "block";
+
+    convertBtn.disabled = false;
+
+    status.textContent = "Image selected successfully.";
+
+});
+
+convertBtn.addEventListener("click", function() {
+
+    if (!selectedFile) return;
+
+    convertBtn.disabled = true;
+    status.textContent = "Converting image...";
+
+    const img = new Image();
+
+    img.onload = function() {
+
+        const size = Number(iconSize.value);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+
+        const ctx = canvas.getContext("2d");
+
+        const scale = Math.min(
+            size / img.width,
+            size / img.height
+        );
+
+        const width = img.width * scale;
+        const height = img.height * scale;
+
+        const x = (size - width) / 2;
+        const y = (size - height) / 2;
+
+        ctx.clearRect(0, 0, size, size);
+        ctx.drawImage(img, x, y, width, height);
+
+        canvas.toBlob(function(blob) {
+
+            if (!blob) {
+                status.textContent = "Image conversion failed.";
+                convertBtn.disabled = false;
+                return;
+            }
+
+            blob.arrayBuffer().then(function(buffer) {
+
+                const png = new Uint8Array(buffer);
+
+                const ico = new Uint8Array(22 + png.length);
+
+                const view = new DataView(ico.buffer);
+
+                // ICO header
+                view.setUint16(0, 0, true);
+                view.setUint16(2, 1, true);
+                view.setUint16(4, 1, true);
+
+                // Image directory entry
+                ico[6] = size === 256 ? 0 : size;
+                ico[7] = size === 256 ? 0 : size;
+                ico[8] = 0;
+                ico[9] = 0;
+
+                view.setUint16(10, 1, true);
+                view.setUint16(12, 32, true);
+                view.setUint32(14, png.length, true);
+                view.setUint32(18, 22, true);
+
+                // PNG image data
+                ico.set(png, 22);
+
+                const icoBlob = new Blob(
+                    [ico],
+                    { type: "image/x-icon" }
+                );
+
+                outputURL = URL.createObjectURL(icoBlob);
+
+                downloadArea.innerHTML = "";
+
+                const link = document.createElement("a");
+                link.href = outputURL;
+                link.download = "avenqio-icon-" + size + "x" + size + ".ico";
+
+                const button = document.createElement("button");
+                button.textContent = "Download ICO File";
+
+                link.appendChild(button);
+                downloadArea.appendChild(link);
+
+                status.textContent = "ICO icon created successfully!";
+
+                convertBtn.disabled = false;
+
+                canvas.width = 0;
+                canvas.height = 0;
+
+            });
+
+        }, "image/png");
+
+    };
+
+    img.onerror = function() {
+        status.textContent = "Unable to process this image.";
+        convertBtn.disabled = false;
+    };
+
+    img.src = imageURL;
+
+});
+
+</script>
+
+</body>
+</html>

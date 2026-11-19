@@ -1,0 +1,273 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Convert PDF pages into PNG images online for free with Avenqio.">
+<title>PDF to PNG Converter - Avenqio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f8fc;
+    color: #172554;
+}
+
+header {
+    background: white;
+    padding: 20px 8%;
+    box-shadow: 0 2px 10px #00000010;
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: bold;
+    color: #5b4cf0;
+    text-decoration: none;
+}
+
+.container {
+    max-width: 850px;
+    margin: 55px auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 5px 25px #0000000c;
+    text-align: center;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+p {
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.upload {
+    display: block;
+    border: 2px dashed #5b4cf0;
+    padding: 35px 15px;
+    border-radius: 12px;
+    margin: 25px 0;
+    cursor: pointer;
+    background: #fafaff;
+}
+
+input[type="file"] {
+    max-width: 100%;
+    margin-top: 15px;
+}
+
+button {
+    background: #5b4cf0;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    margin: 8px;
+}
+
+button:hover {
+    background: #4535d5;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+#status {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+#results {
+    margin-top: 25px;
+}
+
+.result {
+    background: #f7f8fc;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.result img {
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+    border-radius: 6px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+
+a {
+    color: #5b4cf0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<a class="logo" href="index.html">Avenqio</a>
+</header>
+
+<div class="container">
+<div class="card">
+
+<h1>PDF to PNG Converter</h1>
+
+<p>Convert your PDF pages into high-quality PNG images online for free.</p>
+
+<label class="upload">
+<strong>Select Your PDF File</strong>
+<br>
+<input type="file" id="pdfFile" accept=".pdf,application/pdf">
+</label>
+
+<button id="convertBtn" onclick="convertPDF()">Convert to PNG</button>
+
+<p id="status">Choose a PDF file to get started.</p>
+
+<div id="results"></div>
+
+</div>
+</div>
+
+<footer>
+<p>© 2026 Avenqio. Simple and useful online tools.</p>
+<a href="index.html">Back to Home</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+async function convertPDF() {
+
+    const fileInput = document.getElementById("pdfFile");
+    const status = document.getElementById("status");
+    const results = document.getElementById("results");
+    const button = document.getElementById("convertBtn");
+
+    if (!fileInput.files.length) {
+        status.textContent = "Please select a PDF file first.";
+        return;
+    }
+
+    const file = fileInput.files[0];
+
+    if (file.type !== "application/pdf" &&
+        !file.name.toLowerCase().endsWith(".pdf")) {
+        status.textContent = "Please select a valid PDF file.";
+        return;
+    }
+
+    if (file.size > 25 * 1024 * 1024) {
+        status.textContent = "Please choose a PDF smaller than 25 MB.";
+        return;
+    }
+
+    button.disabled = true;
+    results.innerHTML = "";
+    status.textContent = "Loading PDF...";
+
+    try {
+
+        const buffer = await file.arrayBuffer();
+
+        const pdf = await pdfjsLib.getDocument({
+            data: new Uint8Array(buffer)
+        }).promise;
+
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+
+            status.textContent =
+                "Converting page " + pageNum + " of " + pdf.numPages + "...";
+
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 });
+
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+
+            canvas.width = Math.ceil(viewport.width);
+            canvas.height = Math.ceil(viewport.height);
+
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+
+            const imageURL = canvas.toDataURL("image/png");
+
+            const result = document.createElement("div");
+            result.className = "result";
+
+            const heading = document.createElement("h3");
+            heading.textContent = "Page " + pageNum;
+
+            const img = document.createElement("img");
+            img.src = imageURL;
+            img.alt = "PDF page " + pageNum + " converted to PNG";
+
+            const download = document.createElement("a");
+            download.href = imageURL;
+            download.download = "avenqio-page-" + pageNum + ".png";
+
+            const downloadButton = document.createElement("button");
+            downloadButton.textContent = "Download PNG";
+
+            download.appendChild(downloadButton);
+
+            result.appendChild(heading);
+            result.appendChild(img);
+            result.appendChild(document.createElement("br"));
+            result.appendChild(download);
+
+            results.appendChild(result);
+
+            canvas.width = 0;
+            canvas.height = 0;
+        }
+
+        status.textContent =
+            "Success! " + pdf.numPages + " page(s) converted successfully.";
+
+    } catch (error) {
+
+        console.error(error);
+        status.textContent =
+            "Conversion failed. Please check your PDF file and try again.";
+
+    } finally {
+
+        button.disabled = false;
+
+    }
+}
+</script>
+
+</body>
+</html>

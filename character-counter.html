@@ -1,0 +1,240 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Character Counter - Avenqio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #172554;
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+header h1 {
+    margin: 0 0 8px;
+}
+
+.container {
+    max-width: 750px;
+    margin: 35px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px #00000010;
+}
+
+textarea {
+    width: 100%;
+    min-height: 220px;
+    padding: 15px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    resize: vertical;
+}
+
+textarea:focus {
+    outline: 2px solid #2563eb;
+    border-color: #2563eb;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.stat {
+    padding: 20px 10px;
+    text-align: center;
+    background: #eff6ff;
+    border-radius: 10px;
+}
+
+.stat h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+}
+
+.stat p {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: #2563eb;
+    overflow-wrap: anywhere;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    margin-top: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 15px;
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Avenqio</h1>
+    <p>Free Online Character Counter</p>
+</header>
+
+<main class="container">
+    <h2>Character Counter</h2>
+
+    <p>
+        Type or paste your text below. Counts update automatically.
+    </p>
+
+    <textarea id="textInput"
+        placeholder="Type or paste your text here..."></textarea>
+
+    <div class="stats">
+
+        <div class="stat">
+            <h3>Total Characters</h3>
+            <p id="characters">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Characters Without Spaces</h3>
+            <p id="noSpaces">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Words</h3>
+            <p id="words">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Lines</h3>
+            <p id="lines">0</p>
+        </div>
+
+    </div>
+
+    <button id="clearBtn" type="button">Clear Text</button>
+</main>
+
+<footer>
+    © 2026 Avenqio. All rights reserved.
+</footer>
+
+<script>
+const textInput = document.getElementById("textInput");
+
+function updateCounts() {
+    const text = textInput.value;
+    const trimmed = text.trim();
+
+    document.getElementById("characters").textContent =
+        Array.from(text).length;
+
+    document.getElementById("noSpaces").textContent =
+        Array.from(text.replace(/\s/g, "")).length;
+
+    document.getElementById("words").textContent =
+        trimmed ? trimmed.split(/\s+/u).length : 0;
+
+    document.getElementById("lines").textContent =
+        text.length === 0 ? 0 : text.split(/\r\n|\r|\n/).length;
+}
+
+textInput.addEventListener("input", updateCounts);
+
+document.getElementById("clearBtn").addEventListener("click", function() {
+    textInput.value = "";
+    updateCounts();
+    textInput.focus();
+});
+</script>
+
+</body>
+</html>
+
+<section style="max-width:750px;margin:30px auto;padding:25px;background:#ffffff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,0.06);line-height:1.8;color:#334155;">
+
+  <h2>What is a Character Counter?</h2>
+  <p>
+    A Character Counter is an online tool that counts the characters in a text. Avenqio's free Character Counter helps you check total characters, characters without spaces, words, and lines while typing or editing your content.
+  </p>
+
+  <h2>How to Count Characters Online?</h2>
+  <ol>
+    <li>Type or paste your text into the text box.</li>
+    <li>Check the total character count.</li>
+    <li>View the character count without spaces.</li>
+    <li>Check the number of words and lines.</li>
+    <li>Click Clear Text to remove the text and start again.</li>
+  </ol>
+
+  <h2>Benefits of Using an Online Character Counter</h2>
+  <ul>
+    <li>Count characters instantly while typing.</li>
+    <li>Check characters with and without spaces.</li>
+    <li>View word and line counts together.</li>
+    <li>Useful for social media posts, essays, articles, and descriptions.</li>
+    <li>No additional software installation required.</li>
+  </ul>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>1. Is the Avenqio Character Counter free?</h3>
+  <p>Yes, you can use this Character Counter online for free.</p>
+
+  <h3>2. What does total character count include?</h3>
+  <p>Total character count includes letters, numbers, punctuation marks, spaces, and line breaks.</p>
+
+  <h3>3. What are characters without spaces?</h3>
+  <p>This count excludes whitespace characters, such as spaces, tabs, and line breaks.</p>
+
+  <h3>4. Does the tool count words and lines too?</h3>
+  <p>Yes, it automatically displays the number of words and lines along with character counts.</p>
+
+  <h3>5. Can I use it for social media descriptions?</h3>
+  <p>Yes, you can use it to check the length of social media posts, captions, descriptions, and other text.</p>
+
+  <h3>6. Is my text uploaded to a server?</h3>
+  <p>No. The counting process runs directly in your browser, and this tool does not upload your text to an Avenqio server.</p>
+
+</section>

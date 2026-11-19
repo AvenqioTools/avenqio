@@ -1,0 +1,305 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Image Resizer - Avenqio</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #222;
+}
+
+header {
+    background: #ffffff;
+    padding: 20px 8%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 20px;
+}
+
+.tool-box {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+h1 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.description {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.upload-area {
+    border: 2px dashed #2563eb;
+    border-radius: 12px;
+    padding: 30px 20px;
+    margin-bottom: 25px;
+    background: #f8faff;
+}
+
+input[type="file"] {
+    margin: 15px;
+}
+
+.size-box {
+    margin: 20px 0;
+}
+
+.size-box label {
+    display: inline-block;
+    margin: 8px;
+    font-weight: bold;
+}
+
+.size-box input {
+    width: 120px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+#downloadBtn {
+    display: none;
+    margin-top: 20px;
+    text-decoration: none;
+    background: #16a34a;
+    color: white;
+    padding: 13px 25px;
+    border-radius: 8px;
+}
+
+#downloadBtn:hover {
+    background: #15803d;
+}
+
+#preview {
+    max-width: 100%;
+    max-height: 300px;
+    margin-top: 25px;
+    display: none;
+    border-radius: 8px;
+}
+
+.back {
+    display: inline-block;
+    margin-top: 30px;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Avenqio</div>
+</header>
+
+<div class="container">
+
+    <div class="tool-box">
+
+        <h1>Image Resizer</h1>
+
+        <p class="description">
+            Resize your images quickly and easily.
+        </p>
+
+        <div class="upload-area">
+
+            <p>Select an image from your computer</p>
+
+            <input type="file" id="fileInput" accept="image/*">
+
+        </div>
+
+        <div class="size-box">
+
+            <label>
+                Width:
+                <input type="number" id="widthInput" placeholder="Width">
+            </label>
+
+            <label>
+                Height:
+                <input type="number" id="heightInput" placeholder="Height">
+            </label>
+
+        </div>
+
+        <button onclick="resizeImage()">
+            Resize Image
+        </button>
+
+        <br>
+
+        <img id="preview">
+
+        <br>
+
+        <a id="downloadBtn" download="avenqio-resized-image.png">
+            Download Resized Image
+        </a>
+
+        <br>
+
+        <a class="back" href="index.html">
+            ← Back to Avenqio
+        </a>
+
+    </div>
+
+</div>
+
+<footer>
+    © 2026 Avenqio. All rights reserved.
+</footer>
+
+<script>
+
+function resizeImage() {
+
+    const fileInput = document.getElementById("fileInput");
+    const widthInput = document.getElementById("widthInput");
+    const heightInput = document.getElementById("heightInput");
+    const preview = document.getElementById("preview");
+    const downloadBtn = document.getElementById("downloadBtn");
+
+    if (fileInput.files.length === 0) {
+        alert("Please select an image first.");
+        return;
+    }
+
+    const width = parseInt(widthInput.value);
+    const height = parseInt(heightInput.value);
+
+    if (!width || !height || width <= 0 || height <= 0) {
+        alert("Please enter a valid width and height.");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+
+        const img = new Image();
+
+        img.onload = function() {
+
+            const canvas = document.createElement("canvas");
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext("2d");
+
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob(function(blob) {
+
+                const imageURL = URL.createObjectURL(blob);
+
+                preview.src = imageURL;
+                preview.style.display = "inline-block";
+
+                downloadBtn.href = imageURL;
+                downloadBtn.style.display = "inline-block";
+
+            }, "image/png");
+
+        };
+
+        img.src = event.target.result;
+
+    };
+
+    reader.readAsDataURL(fileInput.files[0]);
+}
+
+</script>
+
+</body>
+</html>
+<section style="max-width:800px;margin:40px auto;padding:25px;background:#fff;border-radius:12px;line-height:1.8;color:#333;">
+
+<h2>What is an Image Resizer?</h2>
+<p>An image resizer is an online tool that changes the width and height of an image. It helps users adjust image dimensions for websites, social media, documents and other digital projects.</p>
+
+<h2>How to Resize an Image Online?</h2>
+<p>Follow these simple steps:</p>
+<ol>
+<li>Select an image from your computer.</li>
+<li>Enter your desired width in pixels.</li>
+<li>Enter your desired height in pixels.</li>
+<li>Click the Resize Image button.</li>
+<li>Preview and download your resized image.</li>
+</ol>
+
+<h2>Benefits of Image Resizing</h2>
+<ul>
+<li>Adjusts image dimensions for different uses.</li>
+<li>Helps prepare images for websites.</li>
+<li>Creates images with specific pixel dimensions.</li>
+<li>Useful for documents and digital designs.</li>
+<li>Processes images directly in your browser.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>1. Is Avenqio Image Resizer free?</h3>
+<p>Yes, this image resizer is free to use.</p>
+
+<h3>2. Can I enter custom image dimensions?</h3>
+<p>Yes, you can enter your preferred width and height in pixels.</p>
+
+<h3>3. Which format does the resized image use?</h3>
+<p>The current tool saves resized images in PNG format.</p>
+
+<h3>4. Will resizing affect image quality?</h3>
+<p>Changing image dimensions can affect image clarity. Enlarging a small image may make it look less sharp.</p>
+
+<h3>5. Do I need to install software?</h3>
+<p>No, you can resize images directly in your web browser.</p>
+
+</section>

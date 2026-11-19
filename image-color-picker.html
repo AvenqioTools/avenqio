@@ -1,0 +1,341 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="Pick colors from any image online for free. Get HEX and RGB color codes with Avenqio Image Color Picker.">
+
+<title>Image Color Picker - Avenqio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f8fc;
+    color: #172554;
+}
+
+header {
+    background: white;
+    padding: 20px 8%;
+    box-shadow: 0 2px 10px #00000010;
+}
+
+.logo {
+    color: #5b4cf0;
+    font-size: 26px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.container {
+    max-width: 850px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 5px 25px #0000000c;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+p {
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.upload {
+    display: block;
+    padding: 30px;
+    margin: 25px 0;
+    border: 2px dashed #5b4cf0;
+    border-radius: 12px;
+    background: #fafaff;
+}
+
+input {
+    margin-top: 15px;
+    max-width: 100%;
+}
+
+.canvas-area {
+    width: 100%;
+    overflow: auto;
+    margin: 20px auto;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+    border-radius: 8px;
+}
+
+.color-preview {
+    width: 100px;
+    height: 75px;
+    margin: 20px auto;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    background: #ffffff;
+}
+
+.color-info {
+    background: #f7f8fc;
+    padding: 15px;
+    margin: 12px 0;
+    border-radius: 10px;
+}
+
+button {
+    background: #5b4cf0;
+    color: white;
+    border: none;
+    padding: 13px 22px;
+    margin: 8px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4535d5;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.code {
+    font-size: 19px;
+    font-weight: bold;
+    word-break: break-all;
+}
+
+#status {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+
+footer a {
+    color: #5b4cf0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<a href="index.html" class="logo">Avenqio</a>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Image Color Picker</h1>
+
+<p>Upload an image and click anywhere on it to pick a color and get its HEX and RGB codes.</p>
+
+<label class="upload">
+<strong>Select Your Image</strong>
+<br>
+<input type="file" id="imageInput" accept="image/*">
+</label>
+
+<div class="canvas-area">
+<canvas id="canvas" style="display:none;"></canvas>
+</div>
+
+<p id="status">Choose an image to get started.</p>
+
+<div class="color-preview" id="colorPreview"></div>
+
+<div class="color-info">
+<p>HEX Color Code</p>
+<div class="code" id="hexCode">#FFFFFF</div>
+<button id="copyHex" disabled>Copy HEX</button>
+</div>
+
+<div class="color-info">
+<p>RGB Color Code</p>
+<div class="code" id="rgbCode">rgb(255, 255, 255)</div>
+<button id="copyRGB" disabled>Copy RGB</button>
+</div>
+
+</div>
+</div>
+
+<footer>
+<p>© 2026 Avenqio. Simple and useful online tools.</p>
+<a href="index.html">Back to Home</a>
+</footer>
+
+<script>
+
+const imageInput = document.getElementById("imageInput");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d", {
+    willReadFrequently: true
+});
+
+const status = document.getElementById("status");
+const colorPreview = document.getElementById("colorPreview");
+const hexCode = document.getElementById("hexCode");
+const rgbCode = document.getElementById("rgbCode");
+const copyHex = document.getElementById("copyHex");
+const copyRGB = document.getElementById("copyRGB");
+
+let imageURL = null;
+let hasImage = false;
+
+imageInput.addEventListener("change", function() {
+
+    const file = imageInput.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        status.textContent = "Please select a valid image.";
+        return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+        status.textContent = "Please select an image smaller than 15 MB.";
+        return;
+    }
+
+    if (imageURL) {
+        URL.revokeObjectURL(imageURL);
+    }
+
+    imageURL = URL.createObjectURL(file);
+
+    const img = new Image();
+
+    img.onload = function() {
+
+        const maxWidth = 1600;
+        const scale = Math.min(1, maxWidth / img.width);
+
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        ctx.drawImage(
+            img,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        canvas.style.display = "block";
+
+        hasImage = true;
+
+        copyHex.disabled = false;
+        copyRGB.disabled = false;
+
+        status.textContent = "Image loaded! Click anywhere on the image to pick a color.";
+
+        URL.revokeObjectURL(imageURL);
+        imageURL = null;
+
+    };
+
+    img.onerror = function() {
+        status.textContent = "Unable to load this image.";
+    };
+
+    img.src = imageURL;
+
+});
+
+canvas.addEventListener("click", function(event) {
+
+    if (!hasImage) return;
+
+    const rect = canvas.getBoundingClientRect();
+
+    const x = Math.floor(
+        (event.clientX - rect.left) * canvas.width / rect.width
+    );
+
+    const y = Math.floor(
+        (event.clientY - rect.top) * canvas.height / rect.height
+    );
+
+    const pixel = ctx.getImageData(x, y, 1, 1).data;
+
+    const r = pixel[0];
+    const g = pixel[1];
+    const b = pixel[2];
+
+    const hex = "#" + [r, g, b].map(value => {
+        return value.toString(16).padStart(2, "0");
+    }).join("").toUpperCase();
+
+    const rgb = `rgb(${r}, ${g}, ${b})`;
+
+    hexCode.textContent = hex;
+    rgbCode.textContent = rgb;
+
+    colorPreview.style.backgroundColor = hex;
+
+    status.textContent = "Color selected successfully!";
+
+});
+
+async function copyText(value, label) {
+
+    try {
+
+        await navigator.clipboard.writeText(value);
+
+        status.textContent = label + " copied successfully!";
+
+    } catch (error) {
+
+        status.textContent = "Copy failed. Please try again.";
+
+    }
+
+}
+
+copyHex.addEventListener("click", function() {
+
+    copyText(hexCode.textContent, "HEX code");
+
+});
+
+copyRGB.addEventListener("click", function() {
+
+    copyText(rgbCode.textContent, "RGB code");
+
+});
+
+</script>
+
+</body>
+</html>
+ss

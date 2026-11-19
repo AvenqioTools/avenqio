@@ -1,0 +1,268 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Age Calculator - Avenqio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #172554;
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+header h1 {
+    margin: 0 0 8px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px #00000010;
+}
+
+h2 {
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin: 20px 0 8px;
+    font-weight: bold;
+}
+
+input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px;
+    margin-top: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+#result {
+    margin-top: 25px;
+    padding: 18px;
+    background: #eff6ff;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 1.8;
+}
+
+#result h3 {
+    color: #1d4ed8;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+}
+
+@media (max-width: 640px) {
+    .container {
+        margin: 20px 15px;
+        padding: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Avenqio</h1>
+    <p>Free Online Age Calculator</p>
+</header>
+
+<main class="container">
+    <h2>Age Calculator</h2>
+
+    <p>
+        Enter your date of birth to calculate your age in years,
+        months and days.
+    </p>
+
+    <label for="birthDate">Date of Birth</label>
+    <input type="date" id="birthDate">
+
+    <button id="calculateBtn" type="button">
+        Calculate Age
+    </button>
+
+    <div id="result" role="status" aria-live="polite">
+        Your age will appear here.
+    </div>
+</main>
+
+<footer>
+    © 2026 Avenqio. All rights reserved.
+</footer>
+
+<script>
+const birthDateInput = document.getElementById("birthDate");
+const result = document.getElementById("result");
+
+function getLocalToday() {
+    const now = new Date();
+
+    return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+}
+
+function daysInMonth(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+}
+
+function calculateAge() {
+    if (!birthDateInput.value) {
+        result.textContent = "Please select your date of birth.";
+        return;
+    }
+
+    const parts = birthDateInput.value.split("-").map(Number);
+    const [year, month, day] = parts;
+
+    const birth = new Date(year, month - 1, day);
+    const today = getLocalToday();
+
+    if (
+        birth.getFullYear() !== year ||
+        birth.getMonth() !== month - 1 ||
+        birth.getDate() !== day
+    ) {
+        result.textContent = "Please enter a valid date.";
+        return;
+    }
+
+    if (birth > today) {
+        result.textContent = "Date of birth cannot be in the future.";
+        return;
+    }
+
+    let years = today.getFullYear() - year;
+    let months = today.getMonth() - (month - 1);
+    let days = today.getDate() - day;
+
+    if (days < 0) {
+        months--;
+
+        const previousMonth =
+            (today.getMonth() - 1 + 12) % 12;
+
+        const previousMonthYear =
+            today.getMonth() === 0
+                ? today.getFullYear() - 1
+                : today.getFullYear();
+
+        days += daysInMonth(previousMonthYear, previousMonth);
+    }
+
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
+
+    result.innerHTML = "";
+
+    const heading = document.createElement("h3");
+    heading.textContent = "Your Age";
+
+    const ageText = document.createElement("p");
+    ageText.textContent =
+        years + " Years, " + months + " Months, " + days + " Days";
+
+    result.appendChild(heading);
+    result.appendChild(ageText);
+}
+
+document.getElementById("calculateBtn")
+    .addEventListener("click", calculateAge);
+
+birthDateInput.max = [
+    getLocalToday().getFullYear(),
+    String(getLocalToday().getMonth() + 1).padStart(2, "0"),
+    String(getLocalToday().getDate()).padStart(2, "0")
+].join("-");
+</script>
+
+</body>
+</html>
+
+<section style="max-width:600px;margin:30px auto;padding:25px;background:#ffffff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,0.06);line-height:1.8;color:#334155;">
+
+  <h2>What is an Age Calculator?</h2>
+  <p>
+    An Age Calculator is an online tool that calculates a person's age using their date of birth. Avenqio's free Age Calculator shows your age in years, months, and days.
+  </p>
+
+  <h2>How to Calculate Your Age Online?</h2>
+  <ol>
+    <li>Select your date of birth using the date picker.</li>
+    <li>Click the Calculate Age button.</li>
+    <li>Your age will appear in years, months, and days.</li>
+  </ol>
+
+  <h2>Benefits of Using an Online Age Calculator</h2>
+  <ul>
+    <li>Calculate your age quickly and easily.</li>
+    <li>View your age in years, months, and days.</li>
+    <li>Check your age without doing manual calculations.</li>
+    <li>Use the tool directly in your web browser.</li>
+    <li>No additional software installation is required.</li>
+  </ul>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>1. Is the Avenqio Age Calculator free?</h3>
+  <p>Yes, you can use this online Age Calculator for free.</p>
+
+  <h3>2. How does the Age Calculator work?</h3>
+  <p>It compares your selected date of birth with the current date to calculate your age in years, months, and days.</p>
+
+  <h3>3. Can I enter a future date?</h3>
+  <p>No, the calculator does not accept a future date as a date of birth.</p>
+
+  <h3>4. Do I need to install any software?</h3>
+  <p>No, the Age Calculator works directly in your web browser.</p>
+
+  <h3>5. Is my date of birth uploaded to a server?</h3>
+  <p>No. The age calculation is performed directly in your browser, and this tool does not upload your date of birth to an Avenqio server.</p>
+
+</section>

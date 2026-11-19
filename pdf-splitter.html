@@ -1,0 +1,273 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Split PDF files online for free. Extract selected pages from a PDF and download them as a new PDF with Avenqio.">
+<title>PDF Splitter - Avenqio</title>
+
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f7f8fc;
+    color:#172554;
+}
+header{
+    background:white;
+    padding:18px 7%;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+.logo{
+    font-size:26px;
+    font-weight:bold;
+    color:#5b4cf0;
+    text-decoration:none;
+}
+.container{
+    max-width:700px;
+    margin:55px auto;
+    padding:20px;
+}
+.tool-box{
+    background:white;
+    padding:35px;
+    border-radius:15px;
+    box-shadow:0 5px 25px rgba(0,0,0,.06);
+    text-align:center;
+}
+h1{font-size:32px;margin-top:0}
+p{color:#64748b;line-height:1.6}
+.upload{
+    display:block;
+    border:2px dashed #a5a0f5;
+    border-radius:12px;
+    padding:30px 15px;
+    margin:25px 0;
+    cursor:pointer;
+    background:#fafaff;
+}
+.upload input{display:none}
+label{
+    display:block;
+    text-align:left;
+    font-weight:bold;
+    margin:18px 0 8px;
+}
+input[type="text"]{
+    width:100%;
+    padding:14px;
+    border:1px solid #d6d9e5;
+    border-radius:8px;
+    font-size:16px;
+}
+button{
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:8px;
+    background:#5b4cf0;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:20px;
+}
+button:hover{background:#4335d5}
+button:disabled{background:#aaa;cursor:not-allowed}
+#status{
+    margin-top:20px;
+    font-weight:bold;
+    overflow-wrap:anywhere;
+}
+.download{
+    display:none;
+    background:#16a34a;
+    text-decoration:none;
+    color:white;
+    padding:13px 25px;
+    border-radius:8px;
+    display:none;
+    margin-top:15px;
+}
+footer{
+    text-align:center;
+    padding:25px;
+    color:#64748b;
+}
+.home{
+    color:#5b4cf0;
+    text-decoration:none;
+}
+@media(max-width:600px){
+    .container{margin:25px auto}
+    .tool-box{padding:22px}
+    h1{font-size:26px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <a class="logo" href="index.html">Avenqio</a>
+</header>
+
+<div class="container">
+<div class="tool-box">
+
+<h1>PDF Splitter</h1>
+<p>Extract selected pages from your PDF and save them as a new PDF file.</p>
+
+<label class="upload">
+    <strong>📄 Choose PDF File</strong>
+    <p id="fileName">Click here to upload your PDF</p>
+    <input type="file" id="pdfFile" accept=".pdf,application/pdf">
+</label>
+
+<label for="pages">Enter Page Numbers</label>
+<input type="text" id="pages" placeholder="Example: 1-3, 5, 8-10">
+
+<p>Enter page numbers or ranges separated by commas. Example: 1-3, 5, 8</p>
+
+<button id="splitBtn" onclick="splitPDF()">Split PDF</button>
+
+<div id="status"></div>
+
+<a id="downloadBtn" class="download" download="avenqio-split-pdf.pdf">
+    Download Split PDF
+</a>
+
+</div>
+</div>
+
+<footer>
+    <a class="home" href="index.html">← Back to Home</a>
+    <p>© 2026 Avenqio. All rights reserved.</p>
+</footer>
+
+<script>
+const pdfInput = document.getElementById("pdfFile");
+const fileName = document.getElementById("fileName");
+const statusBox = document.getElementById("status");
+const downloadBtn = document.getElementById("downloadBtn");
+const splitBtn = document.getElementById("splitBtn");
+
+pdfInput.addEventListener("change", function(){
+    if(this.files.length){
+        fileName.textContent = this.files[0].name;
+        statusBox.textContent = "";
+        downloadBtn.style.display = "none";
+    }
+});
+
+function getSelectedPages(value, totalPages){
+    const pages = new Set();
+    const parts = value.split(",");
+
+    for(const part of parts){
+        const item = part.trim();
+
+        if(!item) continue;
+
+        if(item.includes("-")){
+            const range = item.split("-");
+
+            if(range.length !== 2) throw new Error("Invalid page range.");
+
+            const start = Number(range[0].trim());
+            const end = Number(range[1].trim());
+
+            if(!Number.isInteger(start) || !Number.isInteger(end) ||
+               start < 1 || end < start || end > totalPages){
+                throw new Error("Please enter valid page numbers.");
+            }
+
+            for(let i = start; i <= end; i++){
+                pages.add(i - 1);
+            }
+        }else{
+            const page = Number(item);
+
+            if(!Number.isInteger(page) || page < 1 || page > totalPages){
+                throw new Error("Please enter valid page numbers.");
+            }
+
+            pages.add(page - 1);
+        }
+    }
+
+    return [...pages].sort((a,b) => a-b);
+}
+
+async function splitPDF(){
+    const file = pdfInput.files[0];
+    const pageRange = document.getElementById("pages").value.trim();
+
+    downloadBtn.style.display = "none";
+
+    if(!file){
+        statusBox.textContent = "Please select a PDF file first.";
+        return;
+    }
+
+    if(!pageRange){
+        statusBox.textContent = "Please enter the page numbers.";
+        return;
+    }
+
+    if(!window.PDFLib){
+        statusBox.textContent = "PDF library could not load. Please check your internet connection and refresh the page.";
+        return;
+    }
+
+    try{
+        splitBtn.disabled = true;
+        splitBtn.textContent = "Processing...";
+        statusBox.textContent = "Please wait, splitting your PDF...";
+
+        const { PDFDocument } = PDFLib;
+        const bytes = await file.arrayBuffer();
+        const originalPDF = await PDFDocument.load(bytes);
+
+        const totalPages = originalPDF.getPageCount();
+        const selectedPages = getSelectedPages(pageRange, totalPages);
+
+        if(selectedPages.length === 0){
+            throw new Error("Please enter valid page numbers.");
+        }
+
+        const newPDF = await PDFDocument.create();
+
+        const copiedPages = await newPDF.copyPages(originalPDF, selectedPages);
+
+        copiedPages.forEach(page => newPDF.addPage(page));
+
+        const pdfBytes = await newPDF.save();
+
+        const blob = new Blob([pdfBytes], {type:"application/pdf"});
+        const url = URL.createObjectURL(blob);
+
+        downloadBtn.href = url;
+        downloadBtn.download = "avenqio-split-pdf.pdf";
+        downloadBtn.style.display = "inline-block";
+
+        statusBox.textContent =
+            "Success! " + selectedPages.length +
+            " page(s) extracted from " + totalPages + " pages.";
+
+    }catch(error){
+        statusBox.textContent = error.message || "Something went wrong. Please try another PDF.";
+    }finally{
+        splitBtn.disabled = false;
+        splitBtn.textContent = "Split PDF";
+    }
+}
+</script>
+
+</body>
+</html>

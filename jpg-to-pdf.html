@@ -1,0 +1,407 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JPG to PDF Converter - Avenqio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#202b3c}
+header{background:#172554;color:white;text-align:center;padding:25px 15px}
+header h1{margin:0 0 8px;font-size:30px}
+header p{margin:0;color:#dbeafe}
+main{max-width:760px;margin:30px auto;padding:15px}
+.card{background:white;border-radius:16px;padding:25px;box-shadow:0 5px 22px #17255412}
+h2{margin-top:0}
+.upload{border:2px dashed #8ba4d9;border-radius:12px;padding:25px 15px;text-align:center;background:#f8faff}
+input,select,button{font:inherit}
+input[type=file]{display:block;width:100%;margin:18px 0}
+label{display:block;font-weight:bold;margin:18px 0 8px}
+select{width:100%;padding:12px;border:1px solid #ccd5e5;border-radius:8px;background:white}
+button,.link-btn{display:inline-block;border:0;border-radius:9px;padding:13px 18px;background:#2563eb;color:white;font-weight:bold;cursor:pointer;text-decoration:none;text-align:center}
+button:disabled{background:#9ca3af;cursor:not-allowed}
+#convert{width:100%;margin-top:22px}
+#download{display:none;margin-top:15px;background:#15803d;width:100%}
+#status{margin-top:16px;line-height:1.6;overflow-wrap:anywhere}
+#preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;margin-top:20px}
+.thumb{border:1px solid #e1e7f0;border-radius:8px;padding:8px;text-align:center;overflow:hidden}
+.thumb img{width:100%;height:110px;object-fit:contain}
+.thumb p{font-size:12px;overflow-wrap:anywhere}
+.note{font-size:13px;color:#64748b;line-height:1.6}
+footer{text-align:center;padding:20px;color:#64748b}
+@media(max-width:500px){main{padding:12px;margin:15px auto}.card{padding:18px}header h1{font-size:25px}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>JPG to PDF Converter</h1>
+<p>Convert your images into one PDF file</p>
+</header>
+
+<main>
+<div class="card">
+<h2>Image to PDF</h2>
+<p>Select one or more JPG, PNG or WebP images to create a PDF.</p>
+
+<div class="upload">
+<strong>Choose your images</strong>
+<input type="file" id="images" accept="image/jpeg,image/png,image/webp" multiple>
+<p class="note">Select up to 20 images. Each image will appear on a separate PDF page.</p>
+</div>
+
+<label for="pageSize">PDF Page Size</label>
+<select id="pageSize">
+<option value="a4">A4</option>
+<option value="letter">Letter</option>
+<option value="fit">Fit to Image</option>
+</select>
+
+<label for="orientation">Page Orientation</label>
+<select id="orientation">
+<option value="portrait">Portrait</option>
+<option value="landscape">Landscape</option>
+</select>
+
+<div id="preview"></div>
+
+<button id="convert" disabled>Convert to PDF</button>
+<a id="download" class="link-btn" href="#" download="avenqio-images.pdf">Download PDF</a>
+
+<p id="status" role="status" aria-live="polite"></p>
+<a class="link-btn" href="index.html">← Back to Home</a>
+</div>
+</main>
+
+<footer>© 2026 Avenqio · Free Online Tools</footer>
+
+<script>
+const input = document.getElementById('images');
+const preview = document.getElementById('preview');
+const convert = document.getElementById('convert');
+const download = document.getElementById('download');
+const status = document.getElementById('status');
+
+let files = [];
+let pdfUrl = null;
+
+function clearDownload() {
+  download.style.display = 'none';
+  download.removeAttribute('href');
+
+  if (pdfUrl) {
+    URL.revokeObjectURL(pdfUrl);
+    pdfUrl = null;
+  }
+}
+
+input.addEventListener('change', () => {
+  files = Array.from(input.files || []);
+  preview.innerHTML = '';
+  clearDownload();
+  convert.disabled = files.length === 0;
+
+  if (!files.length) {
+    status.textContent = 'Please select at least one image.';
+    return;
+  }
+
+  if (files.length > 20) {
+    files = [];
+    input.value = '';
+    convert.disabled = true;
+    status.textContent = 'Please select no more than 20 images.';
+    return;
+  }
+
+  if (files.some(file => !file.type.startsWith('image/'))) {
+    files = [];
+    input.value = '';
+    convert.disabled = true;
+    status.textContent = 'Please select valid image files.';
+    return;
+  }
+
+  status.textContent = files.length + ' image(s) selected.';
+
+  files.forEach(file => {
+    const item = document.createElement('div');
+    item.className = 'thumb';
+
+    const img = document.createElement('img');
+    const name = document.createElement('p');
+    name.textContent = file.name;
+
+    item.appendChild(img);
+    item.appendChild(name);
+    preview.appendChild(item);
+
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; };
+    reader.onerror = () => { status.textContent = 'Could not preview ' + file.name; };
+    reader.readAsDataURL(file);
+  });
+});
+
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onerror = () => reject(new Error('Could not read ' + file.name));
+
+    reader.onload = () => {
+      const img = new Image();
+
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Unsupported image: ' + file.name));
+      img.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function makePdf(pages) {
+  const encoder = new TextEncoder();
+  const objects = [];
+
+  function add(obj) {
+    objects.push(obj);
+    return objects.length;
+  }
+
+  const catalogId = add('');
+  const pagesId = add('');
+  const pageIds = [];
+
+  pages.forEach(page => {
+    const imageId = add({
+      stream: page.bytes,
+      dict: '/Type /XObject /Subtype /Image /Width ' +
+        page.width + ' /Height ' + page.height +
+        ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode'
+    });
+
+    const content = 'q\n' +
+      page.drawW.toFixed(3) + ' 0 0 ' +
+      page.drawH.toFixed(3) + ' ' +
+      page.x.toFixed(3) + ' ' + page.y.toFixed(3) +
+      ' cm\n/Im0 Do\nQ\n';
+
+    const contentBytes = encoder.encode(content);
+    const contentId = add({stream: contentBytes, dict: ''});
+    const pageId = add('');
+
+    objects[pageId - 1] =
+      '<< /Type /Page /Parent ' + pagesId +
+      ' 0 R /MediaBox [0 0 ' + page.pageW + ' ' +
+      page.pageH + '] /Resources << /XObject << /Im0 ' +
+      imageId + ' 0 R >> >> /Contents ' + contentId + ' 0 R >>';
+
+    pageIds.push(pageId);
+  });
+
+  objects[catalogId - 1] =
+    '<< /Type /Catalog /Pages ' + pagesId + ' 0 R >>';
+
+  objects[pagesId - 1] =
+    '<< /Type /Pages /Kids [' +
+    pageIds.map(id => id + ' 0 R').join(' ') +
+    '] /Count ' + pageIds.length + ' >>';
+
+  const chunks = [];
+  let totalLength = 0;
+
+  function push(chunk) {
+    chunks.push(chunk);
+    totalLength += chunk.length;
+  }
+
+  const offsets = [0];
+  push(encoder.encode('%PDF-1.4\n'));
+
+  objects.forEach((obj, i) => {
+    offsets.push(totalLength);
+    push(encoder.encode((i + 1) + ' 0 obj\n'));
+
+    if (typeof obj === 'string') {
+      push(encoder.encode(obj + '\nendobj\n'));
+    } else {
+      push(encoder.encode(
+        '<< ' + obj.dict + ' /Length ' + obj.stream.length +
+        ' >>\nstream\n'
+      ));
+      push(obj.stream);
+      push(encoder.encode('\nendstream\nendobj\n'));
+    }
+  });
+
+  const xrefOffset = totalLength;
+  let xref = 'xref\n0 ' + (objects.length + 1) +
+    '\n0000000000 65535 f \n';
+
+  for (let i = 1; i < offsets.length; i++) {
+    xref += String(offsets[i]).padStart(10, '0') +
+      ' 00000 n \n';
+  }
+
+  xref += 'trailer\n<< /Size ' + (objects.length + 1) +
+    ' /Root ' + catalogId + ' 0 R >>\nstartxref\n' +
+    xrefOffset + '\n%%EOF';
+
+  push(encoder.encode(xref));
+
+  return new Blob(chunks, {type: 'application/pdf'});
+}
+
+convert.addEventListener('click', async () => {
+  if (!files.length) return;
+
+  convert.disabled = true;
+  clearDownload();
+  status.textContent = 'Creating PDF... Please wait.';
+
+  try {
+    const sizeChoice = document.getElementById('pageSize').value;
+    const orientation = document.getElementById('orientation').value;
+    const pages = [];
+
+    for (const file of files) {
+      const img = await loadImage(file);
+      const canvas = document.createElement('canvas');
+
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas is not available.');
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+
+      const jpegBlob = await new Promise(resolve => {
+        canvas.toBlob(resolve, 'image/jpeg', 0.92);
+      });
+
+      if (!jpegBlob) {
+        throw new Error('Could not process ' + file.name);
+      }
+
+      const bytes = new Uint8Array(await jpegBlob.arrayBuffer());
+
+      let pageW, pageH;
+
+      if (sizeChoice === 'fit') {
+        pageW = img.naturalWidth * 0.75;
+        pageH = img.naturalHeight * 0.75;
+      } else {
+        pageW = sizeChoice === 'letter' ? 612 : 595.28;
+        pageH = sizeChoice === 'letter' ? 792 : 841.89;
+
+        if (orientation === 'landscape') {
+          [pageW, pageH] = [pageH, pageW];
+        }
+      }
+
+      const margin = sizeChoice === 'fit' ? 0 : 24;
+      const availableW = pageW - margin * 2;
+      const availableH = pageH - margin * 2;
+      const scale = Math.min(
+        availableW / img.naturalWidth,
+        availableH / img.naturalHeight
+      );
+
+      const drawW = img.naturalWidth * scale;
+      const drawH = img.naturalHeight * scale;
+
+      pages.push({
+        bytes: bytes,
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+        pageW: pageW,
+        pageH: pageH,
+        drawW: drawW,
+        drawH: drawH,
+        x: (pageW - drawW) / 2,
+        y: (pageH - drawH) / 2
+      });
+    }
+
+    const blob = makePdf(pages);
+    pdfUrl = URL.createObjectURL(blob);
+
+    download.href = pdfUrl;
+    download.download = 'avenqio-images.pdf';
+    download.style.display = 'block';
+
+    status.textContent =
+      'PDF created successfully. Click Download PDF below.';
+  } catch (error) {
+    console.error(error);
+    status.textContent =
+      'PDF could not be created. Please try another image or fewer images.';
+  } finally {
+    convert.disabled = files.length === 0;
+  }
+});
+
+download.addEventListener('click', event => {
+  if (!pdfUrl) {
+    event.preventDefault();
+    status.textContent = 'Please convert your images to PDF first.';
+  }
+});
+</script>
+
+</body>
+</html>
+
+<section style="max-width:760px;margin:30px auto;padding:25px;background:#ffffff;border-radius:14px;box-shadow:0 5px 20px rgba(23,37,84,0.06);line-height:1.8;color:#334155;">
+
+  <h2>What is a JPG to PDF Converter?</h2>
+  <p>
+    A JPG to PDF Converter is an online tool that helps you convert image files into a PDF document. With Avenqio, you can combine multiple JPG, PNG, or WebP images into a single PDF file. Each selected image is placed on a separate PDF page.
+  </p>
+
+  <h2>How to Convert Images to PDF?</h2>
+  <ol>
+    <li>Select JPG, PNG, or WebP images from your device.</li>
+    <li>Choose your preferred PDF page size, such as A4, Letter, or Fit to Image.</li>
+    <li>Select Portrait or Landscape orientation.</li>
+    <li>Click the Convert to PDF button.</li>
+    <li>When the PDF is ready, click Download PDF to save your file.</li>
+  </ol>
+
+  <h2>Benefits of Using an Image to PDF Converter</h2>
+  <ul>
+    <li>Combine multiple images into one PDF document.</li>
+    <li>Choose from different page sizes and orientations.</li>
+    <li>Keep each image on a separate PDF page.</li>
+    <li>Use the tool without installing additional software.</li>
+    <li>Convert images directly in your web browser.</li>
+  </ul>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>1. Is the JPG to PDF Converter free?</h3>
+  <p>Yes, you can use Avenqio's JPG to PDF Converter for free.</p>
+
+  <h3>2. Which image formats are supported?</h3>
+  <p>The tool supports JPG, JPEG, PNG, and WebP image files.</p>
+
+  <h3>3. How many images can I convert at once?</h3>
+  <p>You can select up to 20 images and combine them into one PDF file.</p>
+
+  <h3>4. Can I choose the PDF page size?</h3>
+  <p>Yes, you can choose A4, Letter, or Fit to Image page size.</p>
+
+  <h3>5. Can I use Portrait and Landscape orientation?</h3>
+  <p>Yes, you can select either Portrait or Landscape orientation for A4 and Letter pages.</p>
+
+  <h3>6. Are my images uploaded to a server?</h3>
+  <p>The conversion is performed directly in your browser. The tool does not upload your selected images to an Avenqio server.</p>
+
+</section>

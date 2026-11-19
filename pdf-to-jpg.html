@@ -1,0 +1,328 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PDF to JPG Converter - Avenqio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #172554;
+    color: white;
+    text-align: center;
+    padding: 24px 15px;
+}
+
+header h1 {
+    margin: 0 0 8px;
+}
+
+header p {
+    margin: 0;
+}
+
+.container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px #00000010;
+}
+
+h2 {
+    text-align: center;
+}
+
+.upload-box {
+    border: 2px dashed #2563eb;
+    border-radius: 12px;
+    padding: 30px 15px;
+    text-align: center;
+    margin: 22px 0;
+}
+
+input[type="file"] {
+    display: block;
+    max-width: 100%;
+    margin: 18px auto;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+#status {
+    text-align: center;
+    margin: 18px 0;
+    overflow-wrap: anywhere;
+}
+
+#results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.page {
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    min-width: 0;
+}
+
+.page canvas {
+    width: 100%;
+    height: auto;
+    border: 1px solid #e2e8f0;
+}
+
+.download-link {
+    display: inline-block;
+    background: #15803d;
+    color: white;
+    text-decoration: none;
+    border-radius: 7px;
+    padding: 10px 12px;
+    margin-top: 10px;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Avenqio</h1>
+    <p>Free Online PDF to JPG Converter</p>
+</header>
+
+<main class="container">
+    <h2>PDF to JPG Converter</h2>
+
+    <p>
+        Convert PDF pages into JPG images directly in your browser.
+    </p>
+
+    <div class="upload-box">
+        <p>Select a PDF file to convert</p>
+
+        <input
+            type="file"
+            id="pdfFile"
+            accept=".pdf,application/pdf"
+        >
+
+        <button id="convertBtn" disabled>
+            Convert to JPG
+        </button>
+    </div>
+
+    <p id="status" role="status">
+        Please select a PDF file.
+    </p>
+
+    <div id="results"></div>
+</main>
+
+<footer>
+    © 2026 Avenqio. All rights reserved.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+const pdfInput = document.getElementById("pdfFile");
+const convertBtn = document.getElementById("convertBtn");
+const statusBox = document.getElementById("status");
+const results = document.getElementById("results");
+
+if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+} else {
+    statusBox.textContent =
+        "PDF library could not load. Please check your internet connection.";
+}
+
+let currentFile = null;
+
+pdfInput.addEventListener("change", function () {
+    currentFile = pdfInput.files[0] || null;
+    results.replaceChildren();
+
+    convertBtn.disabled = !currentFile || !window.pdfjsLib;
+
+    statusBox.textContent = currentFile
+        ? "Selected: " + currentFile.name
+        : "Please select a PDF file.";
+});
+
+convertBtn.addEventListener("click", async function () {
+    if (!currentFile || !window.pdfjsLib) {
+        statusBox.textContent =
+            "Please select a PDF and check your internet connection.";
+        return;
+    }
+
+    convertBtn.disabled = true;
+    pdfInput.disabled = true;
+    results.replaceChildren();
+
+    try {
+        statusBox.textContent = "Reading PDF...";
+
+        const buffer = await currentFile.arrayBuffer();
+
+        const pdf = await pdfjsLib.getDocument({
+            data: new Uint8Array(buffer)
+        }).promise;
+
+        if (pdf.numPages > 100) {
+            throw new Error(
+                "This tool supports up to 100 pages per PDF. Please use a smaller PDF."
+            );
+        }
+
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            statusBox.textContent =
+                "Converting page " + pageNum + " of " + pdf.numPages + "...";
+
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 });
+
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+
+            canvas.width = Math.ceil(viewport.width);
+            canvas.height = Math.ceil(viewport.height);
+
+            await page.render({
+                canvas: canvas,
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+
+            const imageBlob = await new Promise((resolve, reject) => {
+                canvas.toBlob(blob => {
+                    if (blob) resolve(blob);
+                    else reject(new Error("Could not create JPG image."));
+                }, "image/jpeg", 0.92);
+            });
+
+            const imageUrl = URL.createObjectURL(imageBlob);
+
+            const card = document.createElement("div");
+            card.className = "page";
+
+            const heading = document.createElement("p");
+            heading.textContent = "Page " + pageNum;
+
+            const download = document.createElement("a");
+            download.className = "download-link";
+            download.href = imageUrl;
+            download.download =
+                currentFile.name.replace(/\.pdf$/i, "") +
+                "-page-" + pageNum + ".jpg";
+            download.textContent = "Download JPG";
+
+            card.appendChild(heading);
+            card.appendChild(canvas);
+            card.appendChild(document.createElement("br"));
+            card.appendChild(download);
+            results.appendChild(card);
+        }
+
+        statusBox.textContent =
+            "Done! Your PDF pages are ready to download as JPG images.";
+
+    } catch (error) {
+        console.error(error);
+        statusBox.textContent =
+            "Conversion failed: " + error.message +
+            " Please try another PDF file.";
+    } finally {
+        convertBtn.disabled = false;
+        pdfInput.disabled = false;
+    }
+});
+</script>
+
+</body>
+</html>
+
+<section style="max-width:700px;margin:30px auto;padding:25px;background:#ffffff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,0.06);line-height:1.8;color:#334155;">
+
+  <h2>What is a PDF to JPG Converter?</h2>
+  <p>
+    A PDF to JPG Converter is an online tool that converts PDF pages into JPG image files. Avenqio makes it easy to turn each page of a PDF document into a separate image that you can preview and download.
+  </p>
+
+  <h2>How to Convert PDF to JPG Online?</h2>
+  <ol>
+    <li>Select a PDF file from your device.</li>
+    <li>Click the Convert to JPG button.</li>
+    <li>Wait while the PDF pages are converted into images.</li>
+    <li>Preview the converted pages.</li>
+    <li>Click Download JPG under each page to save the image.</li>
+  </ol>
+
+  <h2>Benefits of Using a PDF to JPG Converter</h2>
+  <ul>
+    <li>Convert PDF pages into separate JPG images.</li>
+    <li>Preview images before downloading.</li>
+    <li>Download each converted page individually.</li>
+    <li>Use the tool without installing desktop software.</li>
+    <li>Convert PDF documents directly in your browser.</li>
+  </ul>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>1. Is the PDF to JPG Converter free?</h3>
+  <p>Yes, you can use Avenqio's PDF to JPG Converter for free.</p>
+
+  <h3>2. Can I convert all PDF pages?</h3>
+  <p>The tool supports PDF files with up to 100 pages. Each page is converted into a separate JPG image.</p>
+
+  <h3>3. Can I download each page separately?</h3>
+  <p>Yes, every converted page has its own Download JPG button.</p>
+
+  <h3>4. Do I need to install any software?</h3>
+  <p>No desktop software installation is required. The converter works in your web browser, but an internet connection is needed to load its PDF processing library.</p>
+
+  <h3>5. Are my PDF files uploaded to Avenqio?</h3>
+  <p>The PDF conversion is performed in your browser. This tool does not upload your selected PDF file to an Avenqio server.</p>
+
+</section>

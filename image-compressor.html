@@ -1,0 +1,631 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Image Compressor - Avenqio</title>
+<meta name="description" content="Compress images online for free with Avenqio. Adjust image quality, compare file sizes, preview and download compressed images.">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #222;
+}
+
+header {
+    background: #fff;
+    padding: 20px 8%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.container {
+    max-width: 850px;
+    margin: 45px auto;
+    padding: 20px;
+}
+
+.tool-box {
+    background: #fff;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.description {
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 28px;
+}
+
+.upload-area {
+    border: 2px dashed #2563eb;
+    border-radius: 12px;
+    padding: 35px 15px;
+    background: #f8faff;
+    margin-bottom: 25px;
+    transition: background 0.2s;
+}
+
+.upload-area.dragging {
+    background: #e0ebff;
+    border-color: #16a34a;
+}
+
+.upload-icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.upload-area p {
+    color: #555;
+    line-height: 1.6;
+}
+
+input[type="file"] {
+    max-width: 100%;
+    margin-top: 12px;
+}
+
+.quality-box {
+    margin: 25px 0;
+    text-align: left;
+}
+
+.quality-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+#qualityValue {
+    color: #2563eb;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+.quality-help {
+    color: #777;
+    font-size: 13px;
+}
+
+button, .download-btn {
+    display: inline-block;
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 13px 22px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+button:hover, .download-btn:hover {
+    background: #1d4ed8;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#preview {
+    display: none;
+    max-width: 100%;
+    max-height: 350px;
+    object-fit: contain;
+    margin: 25px auto 10px;
+    border-radius: 8px;
+}
+
+#result {
+    display: none;
+    margin-top: 25px;
+    padding: 20px;
+    background: #f8faff;
+    border-radius: 12px;
+    text-align: left;
+}
+
+#result h2 {
+    font-size: 20px;
+    text-align: center;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 15px 10px;
+    border-radius: 10px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.stat-card span {
+    display: block;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.stat-card strong {
+    font-size: 18px;
+}
+
+#saving {
+    text-align: center;
+    color: #15803d;
+    font-weight: bold;
+    line-height: 1.6;
+    margin: 15px 0;
+}
+
+#message {
+    margin: 18px 0;
+    line-height: 1.6;
+    color: #b91c1c;
+}
+
+.download-btn {
+    display: none;
+    background: #16a34a;
+    margin-top: 10px;
+}
+
+.download-btn:hover {
+    background: #15803d;
+}
+
+.back {
+    display: inline-block;
+    margin-top: 28px;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #777;
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin: 20px auto;
+        padding: 12px;
+    }
+
+    .tool-box {
+        padding: 22px 16px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    header {
+        padding: 18px 6%;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Avenqio</div>
+</header>
+
+<main class="container">
+    <section class="tool-box">
+
+        <h1>Image Compressor</h1>
+
+        <p class="description">
+            Reduce image file size with adjustable quality.
+            Preview your image and download the compressed result for free.
+        </p>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+
+            <strong>Choose an image</strong>
+
+            <p>
+                Drag and drop your image here<br>
+                or select a file from your computer.
+            </p>
+
+            <input
+                type="file"
+                id="fileInput"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/bmp,image/avif"
+            >
+        </div>
+
+        <div class="quality-box">
+            <div class="quality-heading">
+                <label for="qualityInput">Compression Quality</label>
+                <span id="qualityValue">70%</span>
+            </div>
+
+            <input
+                type="range"
+                id="qualityInput"
+                min="10"
+                max="100"
+                value="70"
+            >
+
+            <p class="quality-help">
+                Lower quality usually means a smaller file.
+                Higher quality preserves more image detail.
+            </p>
+        </div>
+
+        <button type="button" id="compressBtn">
+            Compress Image
+        </button>
+
+        <p id="message" role="status" aria-live="polite"></p>
+
+        <img id="preview" alt="Compressed image preview">
+
+        <section id="result">
+            <h2>Compression Results</h2>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <span>Original Size</span>
+                    <strong id="originalSize">—</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Compressed Size</span>
+                    <strong id="compressedSize">—</strong>
+                </div>
+            </div>
+
+            <p id="saving"></p>
+
+            <p class="quality-help">
+                Output format: WebP when supported, otherwise JPEG.
+            </p>
+
+            <a
+                id="downloadBtn"
+                class="download-btn"
+                download="avenqio-compressed.webp"
+            >
+                Download Compressed Image
+            </a>
+        </section>
+
+        <a class="back" href="index.html">
+            ← Back to Avenqio
+        </a>
+
+    </section>
+</main>
+
+<footer>
+    © 2026 Avenqio. All rights reserved.
+</footer>
+
+<script>
+const fileInput = document.getElementById("fileInput");
+const qualityInput = document.getElementById("qualityInput");
+const qualityValue = document.getElementById("qualityValue");
+const uploadArea = document.getElementById("uploadArea");
+const compressBtn = document.getElementById("compressBtn");
+const preview = document.getElementById("preview");
+const result = document.getElementById("result");
+const message = document.getElementById("message");
+const downloadBtn = document.getElementById("downloadBtn");
+
+let selectedFile = null;
+let originalImage = null;
+let previewURL = null;
+let downloadURL = null;
+
+function clearOutput() {
+    if (previewURL) {
+        URL.revokeObjectURL(previewURL);
+        previewURL = null;
+    }
+
+    if (downloadURL) {
+        URL.revokeObjectURL(downloadURL);
+        downloadURL = null;
+    }
+
+    preview.removeAttribute("src");
+    preview.style.display = "none";
+
+    downloadBtn.removeAttribute("href");
+    downloadBtn.style.display = "none";
+
+    result.style.display = "none";
+    message.textContent = "";
+}
+
+function formatSize(bytes) {
+    if (bytes < 1024) {
+        return bytes + " bytes";
+    }
+
+    if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(2) + " KB";
+    }
+
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+function showFile(file) {
+    clearOutput();
+
+    selectedFile = null;
+    originalImage = null;
+
+    if (!file) {
+        return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+        fileInput.value = "";
+        message.textContent = "Please select a valid image file.";
+        return;
+    }
+
+    if (file.size > 30 * 1024 * 1024) {
+        fileInput.value = "";
+        message.textContent =
+            "This image is larger than 30 MB. Please choose a smaller image.";
+        return;
+    }
+
+    if (file.size === 0) {
+        message.textContent = "This file is empty. Please choose another image.";
+        return;
+    }
+
+    selectedFile = file;
+
+    const reader = new FileReader();
+
+    message.textContent = "Loading image...";
+
+    reader.onload = function(event) {
+        const img = new Image();
+
+        img.onload = function() {
+            originalImage = img;
+            message.textContent =
+                "Image ready: " + file.name +
+                " (" + formatSize(file.size) + ").";
+        };
+
+        img.onerror = function() {
+            selectedFile = null;
+            originalImage = null;
+            message.textContent =
+                "This image could not be opened. Please try another file.";
+        };
+
+        img.src = event.target.result;
+    };
+
+    reader.onerror = function() {
+        message.textContent = "Unable to read this file. Please try again.";
+    };
+
+    reader.readAsDataURL(file);
+}
+
+fileInput.addEventListener("change", function() {
+    showFile(fileInput.files[0]);
+});
+
+qualityInput.addEventListener("input", function() {
+    qualityValue.textContent = qualityInput.value + "%";
+});
+
+["dragenter", "dragover"].forEach(function(eventName) {
+    uploadArea.addEventListener(eventName, function(event) {
+        event.preventDefault();
+        uploadArea.classList.add("dragging");
+    });
+});
+
+["dragleave", "drop"].forEach(function(eventName) {
+    uploadArea.addEventListener(eventName, function(event) {
+        event.preventDefault();
+        uploadArea.classList.remove("dragging");
+    });
+});
+
+uploadArea.addEventListener("drop", function(event) {
+    const file = event.dataTransfer.files[0];
+
+    if (file) {
+        showFile(file);
+    }
+});
+
+compressBtn.addEventListener("click", function() {
+    if (!selectedFile || !originalImage) {
+        message.textContent = "Please select an image and wait for it to load.";
+        return;
+    }
+
+    clearOutput();
+
+    compressBtn.disabled = true;
+    compressBtn.textContent = "Compressing...";
+    message.textContent = "Please wait while your image is compressed.";
+
+    try {
+        const canvas = document.createElement("canvas");
+        canvas.width = originalImage.naturalWidth;
+        canvas.height = originalImage.naturalHeight;
+
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx || canvas.width === 0 || canvas.height === 0) {
+            throw new Error("Unable to process this image.");
+        }
+
+        ctx.drawImage(originalImage, 0, 0);
+
+        const quality = Number(qualityInput.value) / 100;
+
+        canvas.toBlob(function(blob) {
+            canvas.width = 0;
+            canvas.height = 0;
+
+            compressBtn.disabled = false;
+            compressBtn.textContent = "Compress Image";
+
+            if (!blob) {
+                message.textContent =
+                    "Compression failed. Please try another image.";
+                return;
+            }
+
+            downloadURL = URL.createObjectURL(blob);
+            previewURL = downloadURL;
+
+            preview.src = previewURL;
+            preview.style.display = "block";
+
+            const outputExtension =
+                blob.type === "image/webp" ? "webp" : "jpg";
+
+            downloadBtn.href = downloadURL;
+            downloadBtn.download =
+                "avenqio-compressed." + outputExtension;
+            downloadBtn.style.display = "inline-block";
+
+            document.getElementById("originalSize").textContent =
+                formatSize(selectedFile.size);
+
+            document.getElementById("compressedSize").textContent =
+                formatSize(blob.size);
+
+            const difference = selectedFile.size - blob.size;
+            const percentage =
+                (difference / selectedFile.size) * 100;
+
+            const saving = document.getElementById("saving");
+
+            if (difference > 0) {
+                saving.textContent =
+                    "You saved " + percentage.toFixed(1) +
+                    "% (" + formatSize(difference) + ").";
+            } else if (difference === 0) {
+                saving.textContent =
+                    "The file size stayed the same.";
+            } else {
+                saving.textContent =
+                    "The output is " +
+                    Math.abs(percentage).toFixed(1) +
+                    "% larger. Try a lower quality.";
+            }
+
+            result.style.display = "block";
+            message.textContent = "Compression completed successfully.";
+
+        }, "image/webp", quality);
+
+    } catch (error) {
+        compressBtn.disabled = false;
+        compressBtn.textContent = "Compress Image";
+        message.textContent =
+            "Something went wrong. Please try another image.";
+    }
+});
+</script>
+
+</body>
+</html>
+
+<section style="max-width:850px;margin:40px auto;padding:25px;background:#fff;border-radius:12px;line-height:1.8;color:#333;">
+
+<h2>What is an Image Compressor?</h2>
+<p>An image compressor is an online tool that reduces the file size of images while maintaining suitable visual quality. Smaller image files are easier to store, share and upload to websites.</p>
+
+<h2>How to Compress Images Online?</h2>
+<p>Follow these simple steps:</p>
+<ol>
+<li>Select an image from your computer or drag and drop it into the upload area.</li>
+<li>Adjust the compression quality using the slider.</li>
+<li>Click the Compress Image button.</li>
+<li>Preview the compressed image and compare file sizes.</li>
+<li>Click Download Compressed Image to save your result.</li>
+</ol>
+
+<h2>Benefits of Image Compression</h2>
+<ul>
+<li>Reduces image file size.</li>
+<li>Helps save storage space.</li>
+<li>Makes image sharing easier.</li>
+<li>Can help improve website loading speed.</li>
+<li>Provides control over image quality.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>1. Is Avenqio Image Compressor free?</h3>
+<p>Yes, you can use this image compressor free of charge.</p>
+
+<h3>2. Does image compression reduce quality?</h3>
+<p>Compression quality depends on the selected setting. Lower quality may reduce file size but can also reduce image detail.</p>
+
+<h3>3. Which image formats are supported?</h3>
+<p>The tool accepts common image formats supported by your browser. The output is WebP when supported, otherwise JPEG.</p>
+
+<h3>4. Are my images uploaded to a server?</h3>
+<p>No, image processing takes place directly in your browser on your device.</p>
+
+<h3>5. Can I compare the original and compressed file sizes?</h3>
+<p>Yes, the tool displays both file sizes and shows the difference after compression.</p>
+
+</section>

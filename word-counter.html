@@ -1,0 +1,248 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Word Counter - Avenqio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #172554;
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+header h1 {
+    margin: 0 0 8px;
+}
+
+.container {
+    max-width: 750px;
+    margin: 35px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px #00000010;
+}
+
+textarea {
+    width: 100%;
+    min-height: 230px;
+    padding: 15px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    resize: vertical;
+}
+
+textarea:focus {
+    outline: 2px solid #2563eb;
+    border-color: #2563eb;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.stat {
+    padding: 20px 10px;
+    text-align: center;
+    background: #eff6ff;
+    border-radius: 10px;
+}
+
+.stat h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+.stat p {
+    margin: 0;
+    font-size: 27px;
+    font-weight: bold;
+    color: #2563eb;
+    overflow-wrap: anywhere;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    margin-top: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 15px;
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Avenqio</h1>
+    <p>Free Online Word Counter</p>
+</header>
+
+<main class="container">
+    <h2>Word Counter</h2>
+
+    <p>
+        Type or paste your text below to count words,
+        characters and sentences.
+    </p>
+
+    <textarea id="textInput"
+        placeholder="Type or paste your text here..."></textarea>
+
+    <div class="stats">
+
+        <div class="stat">
+            <h3>Words</h3>
+            <p id="words">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Characters</h3>
+            <p id="characters">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Characters (No Spaces)</h3>
+            <p id="noSpaces">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Sentences</h3>
+            <p id="sentences">0</p>
+        </div>
+
+    </div>
+
+    <button id="clearBtn" type="button">Clear Text</button>
+</main>
+
+<footer>
+    © 2026 Avenqio. All rights reserved.
+</footer>
+
+<script>
+const textInput = document.getElementById("textInput");
+const words = document.getElementById("words");
+const characters = document.getElementById("characters");
+const noSpaces = document.getElementById("noSpaces");
+const sentences = document.getElementById("sentences");
+const clearBtn = document.getElementById("clearBtn");
+
+function updateCounts() {
+    const text = textInput.value;
+
+    const trimmed = text.trim();
+
+    const wordCount = trimmed
+        ? trimmed.split(/\s+/u).length
+        : 0;
+
+    const sentenceCount = trimmed
+        ? (trimmed.match(/[.!?]+(?=\s|$)/gu) || []).length
+        : 0;
+
+    words.textContent = wordCount;
+    characters.textContent = text.length;
+    noSpaces.textContent = text.replace(/\s/g, "").length;
+    sentences.textContent = sentenceCount;
+}
+
+textInput.addEventListener("input", updateCounts);
+
+clearBtn.addEventListener("click", function() {
+    textInput.value = "";
+    updateCounts();
+    textInput.focus();
+});
+</script>
+
+</body>
+</html>
+
+<section style="max-width:750px;margin:30px auto;padding:25px;background:#ffffff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,0.06);line-height:1.8;color:#334155;">
+
+  <h2>What is a Word Counter?</h2>
+  <p>
+    A Word Counter is an online tool that counts the number of words, characters, and sentences in a text. Avenqio's free Word Counter helps students, writers, bloggers, and professionals check their text quickly and easily.
+  </p>
+
+  <h2>How to Count Words Online?</h2>
+  <ol>
+    <li>Type or paste your text into the text box.</li>
+    <li>View the word count displayed automatically.</li>
+    <li>Check the total characters and characters without spaces.</li>
+    <li>See the sentence count in the statistics section.</li>
+    <li>Click Clear Text when you want to start again.</li>
+  </ol>
+
+  <h2>Benefits of Using an Online Word Counter</h2>
+  <ul>
+    <li>Count words instantly while typing.</li>
+    <li>Check characters with and without spaces.</li>
+    <li>Count sentences in your text.</li>
+    <li>Useful for articles, assignments, essays, and blog posts.</li>
+    <li>No software installation or registration required.</li>
+  </ul>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>1. Is the Avenqio Word Counter free?</h3>
+  <p>Yes, you can use this online Word Counter for free.</p>
+
+  <h3>2. Does the tool count words automatically?</h3>
+  <p>Yes, the word count updates automatically whenever you type, paste, or edit text.</p>
+
+  <h3>3. What is the difference between characters and characters without spaces?</h3>
+  <p>Characters include letters, numbers, punctuation, and spaces. Characters without spaces exclude whitespace characters.</p>
+
+  <h3>4. Can I use this tool for essays and articles?</h3>
+  <p>Yes, it can help you check the length of essays, articles, assignments, blog posts, and other written content.</p>
+
+  <h3>5. Do I need to install anything?</h3>
+  <p>No, the Word Counter works directly in your web browser without requiring additional software.</p>
+
+  <h3>6. Is my text uploaded to a server?</h3>
+  <p>No. The word counting is performed directly in your browser, and this tool does not upload your text to an Avenqio server.</p>
+
+</section>

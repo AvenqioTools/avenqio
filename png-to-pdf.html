@@ -1,0 +1,308 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Convert PNG images into PDF files online for free with Avenqio PNG to PDF Converter.">
+<title>PNG to PDF Converter - Avenqio</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f8fc;
+    color: #172554;
+}
+
+header {
+    background: white;
+    padding: 18px 7%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: bold;
+    color: #172554;
+    text-decoration: none;
+}
+
+.logo span {
+    color: #5b4cf0;
+}
+
+.container {
+    max-width: 850px;
+    margin: 55px auto;
+    padding: 20px;
+}
+
+.tool-box {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.06);
+    text-align: center;
+}
+
+h1 {
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.description {
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.upload-area {
+    border: 2px dashed #b8b3fa;
+    background: #fafaff;
+    border-radius: 12px;
+    padding: 35px 15px;
+    margin-bottom: 20px;
+}
+
+.upload-area p {
+    margin-bottom: 15px;
+    color: #64748b;
+}
+
+input[type="file"] {
+    max-width: 100%;
+    margin-top: 10px;
+}
+
+.preview {
+    margin: 20px auto;
+}
+
+.preview img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 5px;
+}
+
+button {
+    background: #5b4cf0;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px 5px;
+}
+
+button:hover {
+    background: #4335d5;
+}
+
+button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+#message {
+    margin-top: 15px;
+    color: #475569;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 25px;
+    color: #5b4cf0;
+    text-decoration: none;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <a href="index.html" class="logo">Avenqio<span>.</span></a>
+</header>
+
+<div class="container">
+    <div class="tool-box">
+
+        <h1>PNG to PDF Converter</h1>
+
+        <p class="description">
+            Convert your PNG image into a PDF document quickly and easily.
+            Upload your image and download your PDF file for free.
+        </p>
+
+        <div class="upload-area">
+            <p>Select a PNG image from your computer</p>
+            <input type="file" id="imageInput" accept="image/png">
+        </div>
+
+        <div class="preview" id="preview"></div>
+
+        <button id="convertBtn" disabled>
+            Convert to PDF
+        </button>
+
+        <p id="message">Please select a PNG image first.</p>
+
+        <a href="index.html" class="back-link">
+            ← Back to All Tools
+        </a>
+
+    </div>
+</div>
+
+<footer>
+    © 2026 Avenqio. All Rights Reserved.
+</footer>
+
+<script>
+const imageInput = document.getElementById("imageInput");
+const convertBtn = document.getElementById("convertBtn");
+const preview = document.getElementById("preview");
+const message = document.getElementById("message");
+
+let selectedImage = null;
+
+imageInput.addEventListener("change", function() {
+
+    const file = this.files[0];
+
+    selectedImage = null;
+    convertBtn.disabled = true;
+    preview.innerHTML = "";
+
+    if (!file) {
+        message.textContent = "Please select a PNG image.";
+        return;
+    }
+
+    if (file.type !== "image/png") {
+        message.textContent = "Please select a valid PNG image.";
+        imageInput.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+
+        const image = new Image();
+
+        image.onload = function() {
+
+            selectedImage = event.target.result;
+
+            preview.innerHTML = "";
+
+            const img = document.createElement("img");
+            img.src = selectedImage;
+
+            preview.appendChild(img);
+
+            convertBtn.disabled = false;
+            message.textContent = "Image uploaded successfully!";
+        };
+
+        image.onerror = function() {
+            message.textContent = "Unable to read this image.";
+        };
+
+        image.src = event.target.result;
+    };
+
+    reader.onerror = function() {
+        message.textContent = "Error reading the image.";
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+convertBtn.addEventListener("click", function() {
+
+    if (!selectedImage) {
+        message.textContent = "Please select an image first.";
+        return;
+    }
+
+    if (!window.jspdf) {
+        message.textContent = "PDF library could not load. Please check your internet connection and refresh the page.";
+        return;
+    }
+
+    try {
+
+        const { jsPDF } = window.jspdf;
+
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 10;
+
+        const image = new Image();
+
+        image.onload = function() {
+
+            const maxWidth = pageWidth - margin * 2;
+            const maxHeight = pageHeight - margin * 2;
+
+            const ratio = Math.min(
+                maxWidth / image.width,
+                maxHeight / image.height
+            );
+
+            const width = image.width * ratio;
+            const height = image.height * ratio;
+
+            const x = (pageWidth - width) / 2;
+            const y = (pageHeight - height) / 2;
+
+            pdf.addImage(
+                selectedImage,
+                "PNG",
+                x,
+                y,
+                width,
+                height
+            );
+
+            pdf.save("avenqio-png-to-pdf.pdf");
+
+            message.textContent = "Your PDF has been downloaded successfully!";
+        };
+
+        image.onerror = function() {
+            message.textContent = "Could not process this image.";
+        };
+
+        image.src = selectedImage;
+
+    } catch (error) {
+        message.textContent = "Something went wrong. Please try again.";
+    }
+
+});
+</script>
+
+</body>
+</html>

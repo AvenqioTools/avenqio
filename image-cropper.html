@@ -1,0 +1,384 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Image Cropper - Avenqio</title>
+<meta name="description" content="Crop images online for free with Avenqio Image Cropper.">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f8fc;
+    color: #172554;
+}
+
+header {
+    background: white;
+    padding: 20px 8%;
+    box-shadow: 0 2px 10px #00000010;
+}
+
+.logo {
+    color: #5b4cf0;
+    font-size: 26px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.container {
+    max-width: 850px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 5px 25px #0000000c;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+p {
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.upload {
+    display: block;
+    padding: 30px;
+    margin: 25px 0;
+    border: 2px dashed #5b4cf0;
+    border-radius: 12px;
+    background: #fafaff;
+}
+
+input {
+    margin-top: 15px;
+    max-width: 100%;
+}
+
+.preview {
+    width: 100%;
+    margin: 20px auto;
+}
+
+.preview img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+button {
+    background: #5b4cf0;
+    color: white;
+    border: none;
+    padding: 13px 22px;
+    margin: 8px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4535d5;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+#status {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+#result {
+    margin-top: 15px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+
+a {
+    color: #5b4cf0;
+}
+
+@media(max-width:600px) {
+    .container {
+        margin: 20px auto;
+        padding: 12px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<a href="index.html" class="logo">Avenqio</a>
+</header>
+
+<div class="container">
+<div class="card">
+
+<h1>Image Cropper</h1>
+
+<p>Upload your image, select the area you want to crop, and download it as a PNG image.</p>
+
+<label class="upload">
+<strong>Select Your Image</strong>
+<br>
+<input type="file" id="imageInput" accept="image/*">
+</label>
+
+<div class="preview">
+<img id="image" style="display:none;" alt="Image preview">
+</div>
+
+<div>
+<button id="cropBtn" disabled>Crop Image</button>
+<button id="resetBtn" disabled>Reset</button>
+</div>
+
+<div id="result"></div>
+
+<p id="status">Choose an image to get started.</p>
+
+</div>
+</div>
+
+<footer>
+<p>© 2026 Avenqio. Simple and useful online tools.</p>
+<a href="index.html">Back to Home</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+<script>
+
+const imageInput = document.getElementById("imageInput");
+const image = document.getElementById("image");
+const cropBtn = document.getElementById("cropBtn");
+const resetBtn = document.getElementById("resetBtn");
+const status = document.getElementById("status");
+const result = document.getElementById("result");
+
+let cropper = null;
+let imageURL = null;
+let downloadURL = null;
+
+function clearCropper() {
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+function clearDownload() {
+    if (downloadURL) {
+        URL.revokeObjectURL(downloadURL);
+        downloadURL = null;
+    }
+}
+
+function loadCropperLibrary() {
+    if (typeof Cropper !== "undefined") {
+        startCropper();
+        return;
+    }
+
+    status.textContent = "Loading image editor...";
+
+    const fallback = document.createElement("script");
+
+    fallback.src = "https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js";
+
+    fallback.onload = function() {
+        if (typeof Cropper !== "undefined") {
+            startCropper();
+        } else {
+            status.textContent = "Image editor could not load. Please check your internet connection.";
+        }
+    };
+
+    fallback.onerror = function() {
+        status.textContent = "Unable to load image editor. Please check your internet connection.";
+    };
+
+    document.head.appendChild(fallback);
+}
+
+function startCropper() {
+
+    clearCropper();
+
+    cropper = new Cropper(image, {
+        viewMode: 1,
+        dragMode: "crop",
+        autoCropArea: 0.8,
+        responsive: true,
+        background: false,
+        checkOrientation: true,
+        movable: true,
+        zoomable: true,
+        scalable: true,
+        rotatable: true
+    });
+
+    cropBtn.disabled = false;
+    resetBtn.disabled = false;
+
+    status.textContent = "Select the area you want to crop.";
+}
+
+imageInput.addEventListener("change", function(e) {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    clearCropper();
+    clearDownload();
+
+    result.innerHTML = "";
+    cropBtn.disabled = true;
+    resetBtn.disabled = true;
+
+    if (!file.type.startsWith("image/")) {
+        status.textContent = "Please select a valid image.";
+        imageInput.value = "";
+        return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+        status.textContent = "Please select an image smaller than 15 MB.";
+        imageInput.value = "";
+        return;
+    }
+
+    if (imageURL) {
+        URL.revokeObjectURL(imageURL);
+    }
+
+    imageURL = URL.createObjectURL(file);
+
+    image.onload = function() {
+
+        loadCropperLibrary();
+
+    };
+
+    image.onerror = function() {
+        status.textContent = "Unable to load this image. Please try another image.";
+        cropBtn.disabled = true;
+        resetBtn.disabled = true;
+    };
+
+    image.src = imageURL;
+    image.style.display = "block";
+
+    status.textContent = "Loading image...";
+
+});
+
+cropBtn.addEventListener("click", function() {
+
+    if (!cropper) {
+        status.textContent = "Please upload an image first.";
+        return;
+    }
+
+    const canvas = cropper.getCroppedCanvas({
+        maxWidth: 4000,
+        maxHeight: 4000,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: "high"
+    });
+
+    if (!canvas) {
+        status.textContent = "Unable to crop this image.";
+        return;
+    }
+
+    canvas.toBlob(function(blob) {
+
+        if (!blob) {
+            status.textContent = "Image conversion failed.";
+            return;
+        }
+
+        clearDownload();
+
+        downloadURL = URL.createObjectURL(blob);
+
+        result.innerHTML = "";
+
+        const link = document.createElement("a");
+        link.href = downloadURL;
+        link.download = "avenqio-cropped-image.png";
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Download Cropped PNG";
+
+        link.appendChild(button);
+        result.appendChild(link);
+
+        status.textContent = "Image cropped successfully!";
+
+    }, "image/png");
+
+});
+
+resetBtn.addEventListener("click", function() {
+
+    if (cropper) {
+        cropper.reset();
+        result.innerHTML = "";
+        clearDownload();
+
+        status.textContent = "Crop selection has been reset.";
+    }
+
+});
+
+window.addEventListener("beforeunload", function() {
+    clearCropper();
+    clearDownload();
+
+    if (imageURL) {
+        URL.revokeObjectURL(imageURL);
+    }
+});
+
+</script>
+
+</body>
+</html>

@@ -7,129 +7,129 @@
 
 <title>Avenqio - Free Online Tools for PDF, Images & Text</title>
 
-<meta name="description" content="Use Avenqio's free online tools to merge PDF files, convert images, compress pictures, count text and perform everyday digital tasks quickly and easily.">
+<meta name="description" content="Use Avenqio's free online tools to merge PDF files, convert images, compress pictures, count text, generate QR codes and perform everyday digital tasks quickly and easily.">
 
-<meta name="keywords" content="free online tools, image converter, PDF tools, image compressor, word counter, QR code generator">
-
-<meta name="robots" content="index, follow">
+<meta name="keywords" content="free online tools, image converter, PDF tools, image compressor, QR code generator, word counter, age calculator">
 
 <style>
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    font-family: Arial, sans-serif;
     background: #f7f8fc;
-    color: #172554;
-    line-height: 1.6;
+    color: #1e293b;
 }
 
 header {
-    background: #ffffff;
-    padding: 18px 6%;
+    background: #172554;
+    color: white;
+    padding: 18px 7%;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #eeeeee;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .logo {
     font-size: 27px;
     font-weight: bold;
-    color: #172554;
+    color: white;
     text-decoration: none;
 }
 
-.logo span {
-    color: #5b4cf0;
+nav {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
 }
 
 nav a {
+    color: white;
     text-decoration: none;
-    color: #444;
-    margin-left: 22px;
     font-size: 15px;
 }
 
 nav a:hover {
-    color: #5b4cf0;
+    color: #c7d2fe;
 }
 
 .hero {
     text-align: center;
     padding: 65px 20px 45px;
+    background: linear-gradient(135deg, #eef2ff, #f8fafc);
 }
 
 .hero-badge {
     display: inline-block;
-    background: #eeebff;
-    color: #5b4cf0;
-    padding: 8px 16px;
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 9px 16px;
     border-radius: 30px;
     font-size: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .hero h1 {
-    font-size: 42px;
-    line-height: 1.25;
-    margin-bottom: 15px;
+    font-size: 38px;
     color: #172554;
-}
-
-.hero h1 span {
-    color: #5b4cf0;
+    margin: 10px 0;
 }
 
 .hero p {
-    max-width: 650px;
-    margin: auto;
-    color: #666;
+    color: #64748b;
     font-size: 17px;
+    max-width: 650px;
+    margin: 12px auto 25px;
+    line-height: 1.7;
 }
 
 .search-box {
-    max-width: 600px;
-    margin: 30px auto 0;
-    padding: 0 10px;
+    max-width: 550px;
+    margin: 25px auto 0;
 }
 
 .search-box input {
     width: 100%;
-    padding: 17px 20px;
-    border: 1px solid #dddddd;
-    border-radius: 12px;
+    padding: 16px 18px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
     font-size: 16px;
     outline: none;
-    background: white;
 }
 
 .search-box input:focus {
     border-color: #5b4cf0;
-    box-shadow: 0 0 0 3px rgba(91,76,240,0.10);
+    box-shadow: 0 0 0 3px rgba(91,76,240,0.12);
 }
 
-.tools-section {
+.section {
     max-width: 1200px;
-    margin: auto;
-    padding: 20px 25px 60px;
+    margin: 45px auto;
+    padding: 0 22px;
 }
 
 .section-heading {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 28px;
 }
 
 .section-heading h2 {
-    font-size: 30px;
-    margin-bottom: 8px;
+    color: #172554;
+    font-size: 29px;
+    margin-bottom: 10px;
 }
 
 .section-heading p {
-    color: #777;
+    color: #64748b;
+    line-height: 1.6;
 }
 
 .filters {
@@ -137,18 +137,17 @@ nav a:hover {
     justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: 30px;
+    margin: 25px 0 30px;
 }
 
 .filter-btn {
-    border: 1px solid #e2e2e2;
-    background: white;
     padding: 10px 18px;
-    border-radius: 30px;
+    border: 1px solid #dbe2f0;
+    border-radius: 25px;
+    background: white;
+    color: #334155;
     cursor: pointer;
-    color: #444;
     font-size: 14px;
-    transition: 0.2s;
 }
 
 .filter-btn:hover,
@@ -160,90 +159,95 @@ nav a:hover {
 
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
     gap: 22px;
 }
 
 .tool-card {
     background: white;
-    padding: 24px;
-    border: 1px solid #eeeeee;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: inherit;
-    transition: 0.25s;
-    min-height: 205px;
+    padding: 25px 22px;
+    border: 1px solid #e8eaf2;
+    border-radius: 13px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+    transition: 0.2s ease;
 }
 
 .tool-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(30,30,80,0.08);
-    border-color: #d8d2ff;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.08);
 }
 
 .tool-icon {
-    font-size: 32px;
-    margin-bottom: 13px;
+    width: 48px;
+    height: 48px;
+    background: #eef2ff;
+    color: #5b4cf0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 23px;
+    margin-bottom: 17px;
 }
 
 .tool-card h3 {
+    color: #172554;
     font-size: 19px;
-    margin-bottom: 8px;
+    margin: 0 0 10px;
 }
 
 .tool-card p {
-    color: #777;
+    color: #64748b;
     font-size: 14px;
-    margin-bottom: 15px;
+    line-height: 1.6;
+    min-height: 45px;
 }
 
-.tool-link {
-    margin-top: auto;
-    color: #5b4cf0;
-    font-weight: bold;
+.tool-card a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 16px;
+    background: #5b4cf0;
+    color: white;
+    text-decoration: none;
+    border-radius: 7px;
     font-size: 14px;
+    font-weight: bold;
+}
+
+.tool-card a:hover {
+    background: #4338ca;
 }
 
 #noResults {
     display: none;
     text-align: center;
-    color: #777;
-    padding: 35px;
+    color: #64748b;
+    padding: 25px;
 }
 
 .info-section {
-    background: white;
-    padding: 50px 20px;
+    max-width: 900px;
+    margin: 55px auto;
+    padding: 30px 22px;
     text-align: center;
-}
-
-.info-section div {
-    max-width: 800px;
-    margin: auto;
+    line-height: 1.8;
 }
 
 .info-section h2 {
-    margin-bottom: 15px;
-    font-size: 28px;
+    color: #172554;
 }
 
 .info-section p {
-    color: #666;
+    color: #64748b;
 }
 
 footer {
     background: #172554;
     color: white;
-    text-align: center;
     padding: 30px 20px;
-}
-
-footer p {
-    color: #d4d8e8;
-    font-size: 14px;
-    margin: 8px 0;
+    text-align: center;
+    margin-top: 50px;
 }
 
 .footer-links {
@@ -251,50 +255,39 @@ footer p {
 }
 
 .footer-links a {
-    color: white;
+    color: #dbeafe;
     text-decoration: none;
     margin: 0 10px;
     font-size: 14px;
 }
 
-.footer-links a:hover {
-    color: #b9afff;
-}
-
-@media (max-width: 850px) {
-    .tools-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .hero h1 {
-        font-size: 34px;
-    }
+footer p {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.6;
 }
 
 @media (max-width: 600px) {
     header {
-        flex-direction: column;
-        gap: 12px;
+        justify-content: center;
+        text-align: center;
     }
 
-    nav a {
-        margin: 0 8px;
-    }
-
-    .hero {
-        padding: 45px 15px 35px;
+    nav {
+        justify-content: center;
+        gap: 15px;
     }
 
     .hero h1 {
         font-size: 29px;
     }
 
-    .tools-grid {
-        grid-template-columns: 1fr;
+    .hero {
+        padding: 45px 15px 35px;
     }
 
-    .section-heading h2 {
-        font-size: 25px;
+    .section {
+        padding: 0 15px;
     }
 }
 </style>
@@ -303,25 +296,24 @@ footer p {
 <body>
 
 <header>
-    <a href="index.html" class="logo">Avenqio<span>.</span></a>
+    <a href="index.html" class="logo">Avenqio</a>
 
     <nav>
         <a href="index.html">Home</a>
-        <a href="#tools">Tools</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <a href="#tools">All Tools</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
     </nav>
 </header>
 
 <section class="hero">
-
     <div class="hero-badge">✨ Simple Tools. Smart Solutions.</div>
 
-    <h1>Free Online Tools for<br><span>Everyday Digital Tasks</span></h1>
+    <h1>Free Online Tools for Everyone</h1>
 
     <p>
-        Convert images, manage PDF files, count text and use helpful online tools
-        quickly and easily.
+        Explore free and easy-to-use online tools for image conversion,
+        PDF processing, text counting, calculations and more.
     </p>
 
     <div class="search-box">
@@ -332,260 +324,269 @@ footer p {
             aria-label="Search tools"
         >
     </div>
-
 </section>
 
-<section class="tools-section" id="tools">
+<section class="section" id="tools">
 
     <div class="section-heading">
-        <h2>Explore Our Tools</h2>
-        <p>Choose a free tool to get started</p>
+        <h2>Explore Our Online Tools</h2>
+        <p>Choose a tool and complete your task quickly and easily.</p>
     </div>
 
     <div class="filters">
-
         <button class="filter-btn active" data-filter="all">All Tools</button>
-
         <button class="filter-btn" data-filter="image">Image Tools</button>
-
         <button class="filter-btn" data-filter="pdf">PDF Tools</button>
-
         <button class="filter-btn" data-filter="text">Text Tools</button>
-
         <button class="filter-btn" data-filter="calculator">Calculators</button>
-
         <button class="filter-btn" data-filter="other">Other Tools</button>
-
     </div>
 
     <div class="tools-grid" id="toolsGrid">
 
-        <a href="jpg-to-png.html" class="tool-card"
-           data-category="image" data-name="jpg jpeg to png image converter">
+        <!-- IMAGE TOOLS -->
+
+        <div class="tool-card" data-category="image">
             <div class="tool-icon">🖼️</div>
-            <h3>JPG to PNG Converter</h3>
-            <p>Convert JPG images into PNG format easily.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <h3>JPG to PNG</h3>
+            <p>Convert JPG images into PNG format quickly and easily.</p>
+            <a href="jpg-to-png.html">Use Tool</a>
+        </div>
 
-        <a href="png-to-jpg.html" class="tool-card"
-           data-category="image" data-name="png to jpg jpeg converter">
-            <div class="tool-icon">🎨</div>
-            <h3>PNG to JPG Converter</h3>
-            <p>Convert PNG pictures into JPG format.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+        <div class="tool-card" data-category="image">
+            <div class="tool-icon">📷</div>
+            <h3>PNG to JPG</h3>
+            <p>Convert PNG images into JPG format with ease.</p>
+            <a href="png-to-jpg.html">Use Tool</a>
+        </div>
 
-        <a href="image-compressor.html" class="tool-card"
-           data-category="image" data-name="image photo picture compressor reduce size">
-            <div class="tool-icon">📦</div>
+        <div class="tool-card" data-category="image">
+            <div class="tool-icon">📉</div>
             <h3>Image Compressor</h3>
-            <p>Reduce image file size while maintaining quality.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <p>Reduce image file size while maintaining useful image quality.</p>
+            <a href="image-compressor.html">Use Tool</a>
+        </div>
 
-        <a href="image-resizer.html" class="tool-card"
-           data-category="image" data-name="image photo picture resizer resize">
+        <div class="tool-card" data-category="image">
             <div class="tool-icon">📐</div>
             <h3>Image Resizer</h3>
-            <p>Resize images to your desired dimensions.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <p>Resize images to your preferred width and height.</p>
+            <a href="image-resizer.html">Use Tool</a>
+        </div>
 
-        <a href="jpg-to-pdf.html" class="tool-card"
-           data-category="pdf" data-name="jpg jpeg image photo to pdf">
+        <div class="tool-card" data-category="image">
+            <div class="tool-icon">✂️</div>
+            <h3>Image Cropper</h3>
+            <p>Crop images to select the area you want to keep.</p>
+            <a href="image-cropper.html">Use Tool</a>
+        </div>
+
+        <div class="tool-card" data-category="image">
+            <div class="tool-icon">🎨</div>
+            <h3>Image Color Picker</h3>
+            <p>Pick colors from images and find their color values.</p>
+            <a href="image-color-picker.html">Use Tool</a>
+        </div>
+
+        <div class="tool-card" data-category="image">
+            <div class="tool-icon">🔤</div>
+            <h3>Image to Base64</h3>
+            <p>Convert images into Base64 encoded text.</p>
+            <a href="image-to-base64.html">Use Tool</a>
+        </div>
+
+        <div class="tool-card" data-category="image">
+            <div class="tool-icon">🧩</div>
+            <h3>Image to ICO</h3>
+            <p>Convert images into ICO icon format.</p>
+            <a href="image-to-ico.html">Use Tool</a>
+        </div>
+
+        <div class="tool-card" data-category="image">
+            <div class="tool-icon">🌐</div>
+            <h3>Image to WebP</h3>
+            <p>Convert images into modern WebP format.</p>
+            <a href="image-to-webp.html">Use Tool</a>
+        </div>
+
+        <!-- PDF TOOLS -->
+
+        <div class="tool-card" data-category="pdf">
             <div class="tool-icon">📄</div>
             <h3>JPG to PDF</h3>
-            <p>Convert JPG images into a PDF document.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <p>Convert JPG images into PDF documents.</p>
+            <a href="jpg-to-pdf.html">Use Tool</a>
+        </div>
 
-        <a href="pdf-to-jpg.html" class="tool-card"
-           data-category="pdf" data-name="pdf to jpg image converter">
+        <div class="tool-card" data-category="pdf">
             <div class="tool-icon">📑</div>
+            <h3>PNG to PDF</h3>
+            <p>Turn PNG images into PDF files easily.</p>
+            <a href="png-to-pdf.html">Use Tool</a>
+        </div>
+
+        <div class="tool-card" data-category="pdf">
+            <div class="tool-icon">🖼️</div>
             <h3>PDF to JPG</h3>
             <p>Convert PDF pages into JPG images.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <a href="pdf-to-jpg.html">Use Tool</a>
+        </div>
 
-        <a href="pdf-merger.html" class="tool-card"
-           data-category="pdf" data-name="pdf merge merger combine files">
+        <div class="tool-card" data-category="pdf">
+            <div class="tool-icon">📸</div>
+            <h3>PDF to PNG</h3>
+            <p>Convert PDF pages into PNG image files.</p>
+            <a href="pdf-to-png.html">Use Tool</a>
+        </div>
+
+        <div class="tool-card" data-category="pdf">
             <div class="tool-icon">📚</div>
             <h3>PDF Merger</h3>
             <p>Combine multiple PDF files into one document.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <a href="pdf-merger.html">Use Tool</a>
+        </div>
 
-        <a href="png-to-pdf.html" class="tool-card"
-           data-category="pdf" data-name="png image to pdf converter">
-            <div class="tool-icon">📃</div>
-            <h3>PNG to PDF</h3>
-            <p>Convert PNG images into PDF files.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+        <div class="tool-card" data-category="pdf">
+            <div class="tool-icon">✂️</div>
+            <h3>PDF Splitter</h3>
+            <p>Split PDF documents into separate files.</p>
+            <a href="pdf-splitter.html">Use Tool</a>
+        </div>
 
-        <a href="word-counter.html" class="tool-card"
-           data-category="text" data-name="word counter count words writing">
+        <div class="tool-card" data-category="pdf">
+            <div class="tool-icon">🔄</div>
+            <h3>PDF Rotator</h3>
+            <p>Rotate PDF pages to the correct orientation.</p>
+            <a href="pdf-rotator.html">Use Tool</a>
+        </div>
+
+        <div class="tool-card" data-category="pdf">
             <div class="tool-icon">📝</div>
+            <h3>PDF to Word</h3>
+            <p>Convert PDF documents into Word files.</p>
+            <a href="pdf-to-word.html">Use Tool</a>
+        </div>
+
+        <!-- TEXT TOOLS -->
+
+        <div class="tool-card" data-category="text">
+            <div class="tool-icon">🔢</div>
             <h3>Word Counter</h3>
-            <p>Count words in your text instantly.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <p>Count words in your text quickly and easily.</p>
+            <a href="word-counter.html">Use Tool</a>
+        </div>
 
-        <a href="character-counter.html" class="tool-card"
-           data-category="text" data-name="character counter letters text">
-            <div class="tool-icon">🔤</div>
+        <div class="tool-card" data-category="text">
+            <div class="tool-icon">🔠</div>
             <h3>Character Counter</h3>
-            <p>Count characters and spaces in your text.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <p>Count characters, letters and spaces in your text.</p>
+            <a href="character-counter.html">Use Tool</a>
+        </div>
 
-        <a href="age-calculator.html" class="tool-card"
-           data-category="calculator" data-name="age calculator birthday date">
+        <!-- CALCULATOR -->
+
+        <div class="tool-card" data-category="calculator">
             <div class="tool-icon">🎂</div>
             <h3>Age Calculator</h3>
             <p>Calculate your age using your date of birth.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <a href="age-calculator.html">Use Tool</a>
+        </div>
 
-        <a href="qr-code-generator.html" class="tool-card"
-           data-category="other" data-name="qr code generator create">
+        <!-- OTHER TOOLS -->
+
+        <div class="tool-card" data-category="other">
             <div class="tool-icon">🔳</div>
             <h3>QR Code Generator</h3>
-            <p>Create QR codes from text or website links.</p>
-            <span class="tool-link">Use Tool →</span>
-        </a>
+            <p>Create QR codes from text or website links and download them as PNG images.</p>
+            <a href="qr-code-generator.html">Use Tool</a>
+        </div>
 
     </div>
 
-    <div id="noResults">
-        <h3>No tools found</h3>
-        <p>Try searching with another word or choose a different category.</p>
-    </div>
+    <p id="noResults">No tools found. Try another search.</p>
 
 </section>
 
-<section class="info-section" id="about">
-    <div>
-        <h2>About Avenqio</h2>
-        <p>
-            Avenqio is an online tools website designed to make everyday digital
-            tasks easier. Explore image converters, PDF utilities, text counters
-            and calculators through a clean and accessible interface.
-        </p>
-    </div>
-</section>
+<section class="info-section">
+    <h2>Why Choose Avenqio?</h2>
 
-<section class="info-section" id="contact">
-    <div>
-        <h2>Contact Us</h2>
-        <p>
-            If you have questions, suggestions or feedback about Avenqio,
-            you can contact us by email.
-        </p>
-        <p style="margin-top:12px;">
-            Email: avenqiotools@gmail.com
-        </p>
-    </div>
+    <p>
+        Avenqio provides simple and useful online tools for everyday digital
+        tasks. Convert images, manage PDF files, count text, calculate age
+        and generate QR codes using easy-to-use tools.
+    </p>
+
+    <p>
+        Our goal is to make everyday digital tasks easier through a clean,
+        accessible and user-friendly experience.
+    </p>
 </section>
 
 <footer>
+    <div class="logo">Avenqio</div>
 
-    <a href="index.html" class="logo" style="color:white;">
-        Avenqio<span>.</span>
-    </a>
+    <p>Simple and useful online tools for your everyday digital needs.</p>
 
     <div class="footer-links">
         <a href="index.html">Home</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
         <a href="privacy-policy.html">Privacy Policy</a>
         <a href="terms.html">Terms</a>
     </div>
 
-    <p>Simple and useful online tools for your everyday digital needs.</p>
-
     <p>© 2026 Avenqio. All rights reserved.</p>
-
 </footer>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+const searchInput = document.getElementById("toolSearch");
+const filterButtons = document.querySelectorAll(".filter-btn");
+const toolCards = document.querySelectorAll(".tool-card");
+const noResults = document.getElementById("noResults");
 
-    const searchInput = document.getElementById("toolSearch");
-    const cards = document.querySelectorAll(".tool-card");
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    const noResults = document.getElementById("noResults");
+let activeCategory = "all";
 
-    let activeCategory = "all";
+function filterTools() {
+    const searchText = searchInput.value.toLowerCase().trim();
+    let visibleCount = 0;
 
-    function filterTools() {
+    toolCards.forEach(function(card) {
+        const title = card.querySelector("h3").textContent.toLowerCase();
+        const description = card.querySelector("p").textContent.toLowerCase();
+        const category = card.dataset.category;
 
-        const searchText = searchInput.value.toLowerCase().trim();
-        let visibleCount = 0;
+        const matchesSearch =
+            title.includes(searchText) ||
+            description.includes(searchText);
 
-        cards.forEach(function(card) {
+        const matchesCategory =
+            activeCategory === "all" ||
+            category === activeCategory;
 
-            const category = card.dataset.category || "";
-            const name = card.dataset.name || "";
-
-            const titleElement = card.querySelector("h3");
-            const descriptionElement = card.querySelector("p");
-
-            const title = titleElement ? titleElement.textContent : "";
-            const description = descriptionElement ? descriptionElement.textContent : "";
-
-            const searchableText =
-                (name + " " + title + " " + description).toLowerCase();
-
-            const matchesSearch = searchableText.includes(searchText);
-
-            const matchesCategory =
-                activeCategory === "all" ||
-                category === activeCategory;
-
-            if (matchesSearch && matchesCategory) {
-                card.style.display = "flex";
-                visibleCount++;
-            } else {
-                card.style.display = "none";
-            }
-
-        });
-
-        if (noResults) {
-            noResults.style.display =
-                visibleCount === 0 ? "block" : "none";
+        if (matchesSearch && matchesCategory) {
+            card.style.display = "";
+            visibleCount++;
+        } else {
+            card.style.display = "none";
         }
-
-    }
-
-    filterButtons.forEach(function(button) {
-
-        button.addEventListener("click", function() {
-
-            filterButtons.forEach(function(btn) {
-                btn.classList.remove("active");
-            });
-
-            button.classList.add("active");
-
-            activeCategory = button.dataset.filter || "all";
-
-            filterTools();
-
-        });
-
     });
 
-    if (searchInput) {
-        searchInput.addEventListener("input", filterTools);
-    }
+    noResults.style.display = visibleCount === 0 ? "block" : "none";
+}
 
-    window.filterTools = filterTools;
+searchInput.addEventListener("input", filterTools);
 
-    filterTools();
+filterButtons.forEach(function(button) {
+    button.addEventListener("click", function() {
+        filterButtons.forEach(function(btn) {
+            btn.classList.remove("active");
+        });
 
+        button.classList.add("active");
+        activeCategory = button.dataset.filter;
+
+        filterTools();
+    });
 });
 </script>
 

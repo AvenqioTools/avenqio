@@ -1,0 +1,280 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>QR Code Generator - Avenqio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #172554;
+    color: white;
+    text-align: center;
+    padding: 24px 15px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+header p {
+    margin-bottom: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 35px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+h2 {
+    text-align: center;
+    color: #172554;
+}
+
+label {
+    display: block;
+    margin: 20px 0 8px;
+    font-weight: bold;
+}
+
+textarea, input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+button, .download-btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 7px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button:hover, .download-btn:hover {
+    background: #1d4ed8;
+}
+
+#qrResult {
+    text-align: center;
+    margin-top: 25px;
+    overflow-wrap: anywhere;
+}
+
+#qrResult img, #qrResult canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+#status {
+    text-align: center;
+    color: #475569;
+    margin-top: 15px;
+}
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Avenqio</h1>
+    <p>Free Online Tools</p>
+</header>
+
+<div class="container">
+
+    <h2>QR Code Generator</h2>
+
+    <p>Enter text or a website link to create your QR code.</p>
+
+    <label for="qrText">Text or Website URL</label>
+
+    <textarea id="qrText" placeholder="Enter text or https://example.com"></textarea>
+
+    <label for="qrSize">QR Code Size</label>
+
+    <select id="qrSize" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:7px;font-size:16px;">
+        <option value="200">200 × 200</option>
+        <option value="300" selected>300 × 300</option>
+        <option value="400">400 × 400</option>
+    </select>
+
+    <button id="generateBtn" type="button">Generate QR Code</button>
+
+    <p id="status">Enter your text above to get started.</p>
+
+    <div id="qrResult"></div>
+
+    <a id="downloadBtn" class="download-btn" style="display:none;" download="avenqio-qr-code.png">
+        Download QR Code
+    </a>
+
+    <a href="index.html" class="back-link">← Back to Home</a>
+
+</div>
+
+<footer>
+    © 2026 Avenqio. All rights reserved.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+const qrText = document.getElementById("qrText");
+const qrSize = document.getElementById("qrSize");
+const generateBtn = document.getElementById("generateBtn");
+const qrResult = document.getElementById("qrResult");
+const statusText = document.getElementById("status");
+const downloadBtn = document.getElementById("downloadBtn");
+
+generateBtn.addEventListener("click", function () {
+    const text = qrText.value.trim();
+    const size = Number(qrSize.value);
+
+    qrResult.innerHTML = "";
+    downloadBtn.style.display = "none";
+
+    if (text === "") {
+        statusText.textContent = "Please enter some text or a website URL.";
+        return;
+    }
+
+    if (typeof QRCode === "undefined") {
+        statusText.textContent = "QR library could not load. Please check your internet connection and refresh the page.";
+        return;
+    }
+
+    statusText.textContent = "Generating your QR code...";
+
+    try {
+        new QRCode(qrResult, {
+            text: text,
+            width: size,
+            height: size,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        setTimeout(function () {
+            let image = qrResult.querySelector("img");
+            const canvas = qrResult.querySelector("canvas");
+            let imageUrl = "";
+
+            if (canvas) {
+                imageUrl = canvas.toDataURL("image/png");
+            } else if (image && image.src) {
+                imageUrl = image.src;
+            }
+
+            if (imageUrl) {
+                downloadBtn.href = imageUrl;
+                downloadBtn.style.display = "block";
+                statusText.textContent = "Your QR code is ready!";
+            } else {
+                statusText.textContent = "QR code created, but download is unavailable. Please try again.";
+            }
+        }, 300);
+
+    } catch (error) {
+        statusText.textContent = "Could not create QR code. Please try again.";
+    }
+});
+</script>
+
+</body>
+</html>
+
+<section style="max-width:600px;margin:30px auto;padding:25px;background:#ffffff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,0.06);line-height:1.8;color:#334155;">
+
+  <h2>What is a QR Code Generator?</h2>
+  <p>
+    A QR Code Generator is an online tool that creates a scannable QR code from text or a website URL. Avenqio's free QR Code Generator lets you create QR codes in different sizes and download them as PNG images.
+  </p>
+
+  <h2>How to Generate a QR Code Online?</h2>
+  <ol>
+    <li>Enter your text or website URL in the text box.</li>
+    <li>Choose your preferred QR code size.</li>
+    <li>Click the Generate QR Code button.</li>
+    <li>Preview your generated QR code.</li>
+    <li>Click Download QR Code to save it as a PNG image.</li>
+  </ol>
+
+  <h2>Benefits of Using an Online QR Code Generator</h2>
+  <ul>
+    <li>Create QR codes from text and website links.</li>
+    <li>Choose from three available image sizes.</li>
+    <li>Download QR codes in PNG format.</li>
+    <li>Use QR codes on websites, documents, and printed materials.</li>
+    <li>No desktop software installation required.</li>
+  </ul>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>1. Is the Avenqio QR Code Generator free?</h3>
+  <p>Yes, you can use this QR Code Generator for free.</p>
+
+  <h3>2. What information can I add to a QR code?</h3>
+  <p>You can enter plain text or a website URL to create a QR code.</p>
+
+  <h3>3. Which QR code sizes are available?</h3>
+  <p>You can choose 200 × 200, 300 × 300, or 400 × 400 pixels.</p>
+
+  <h3>4. Can I download my QR code?</h3>
+  <p>Yes, you can download your generated QR code as a PNG image.</p>
+
+  <h3>5. Do I need to install any software?</h3>
+  <p>No, the generator works directly in your web browser. An internet connection is needed to load the QR code library.</p>
+
+  <h3>6. Is my text uploaded to an Avenqio server?</h3>
+  <p>No. QR code generation takes place in your browser, and this tool does not upload your entered text to an Avenqio server.</p>
+
+</section>
